@@ -1,0 +1,82 @@
+/* Shared workspace chrome, with all page-specific adjustments scoped. */
+.sketch-lab .template-layout { grid-template-columns: minmax(0, 1fr) clamp(350px, 28vw, 410px); }
+.sketch-lab .template-panel { min-height: 0; padding: 16px 18px 20px; }
+.sketch-lab .template-panel-title { height: 66px; }
+.sketch-tool-menu { position: relative; z-index: 12; }
+.sketch-tool-menu summary { list-style: none; cursor: pointer; }
+.sketch-tool-menu summary::-webkit-details-marker { display: none; }
+.sketch-tool-menu h1 { margin: 0; font-size: 17px; font-weight: 750; }
+.sketch-tool-menu[open] summary > svg { transform: rotate(180deg); }
+.sketch-tool-menu nav { position: absolute; inset: calc(100% + 8px) 0 auto; display: grid; padding: 8px; border: 1px solid rgb(0 242 254 / .25); border-radius: 14px; background: #0b131e; box-shadow: 0 18px 45px #0009; }
+.sketch-tool-menu nav a { padding: 12px; border-radius: 8px; color: #c8e0eb; text-decoration: none; font-size: 12px; }
+.sketch-tool-menu nav a:hover { color: var(--cyan); background: rgb(0 242 254 / .07); }
+.sketch-lab .template-card { margin-top: 12px; padding: 14px; }
+.sketch-lab .template-card header strong { font-size: 13px; }
+.sketch-lab .template-card header strong small { color: #687e8b; font-size: 10px; font-weight: 400; }
+.sketch-lab .template-card > p { color: #7d929f; font-size: 10px; line-height: 1.6; }
+.sketch-versions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sketch-version { min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: rgb(13 23 35 / .55); }
+.sketch-version h2 { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; font-size: 12px; }
+.sketch-version h2 small { color: #7c93a0; font-size: 9px; font-weight: 400; }
+.sketch-version h2 .is-required { color: #72dce5; }
+.sketch-file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.sketch-upload { overflow: hidden; border: 1px dashed rgb(0 242 254 / .23); border-radius: 10px; background: #070e16; }
+.sketch-upload:hover, .sketch-upload.is-dragging { border-color: var(--cyan); background: rgb(0 242 254 / .045); }
+.sketch-upload button { display: flex; width: 100%; min-height: 112px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 10px 5px; border: 0; background: transparent; color: #8ca7b5; cursor: pointer; }
+.sketch-upload button svg { width: 24px; height: 24px; color: #6dabbc; }
+.sketch-upload button span { font-size: 10px; }
+.sketch-upload button img { width: 100%; height: 72px; object-fit: contain; }
+.sketch-file-meta { display: flex; align-items: center; gap: 5px; margin-top: 6px; }
+.sketch-file-meta span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #7f95a2; font-size: 9px; }
+.sketch-file-meta button { flex-shrink: 0; padding: 3px 0; border: 0; background: none; color: #ee99a4; font-size: 9px; cursor: pointer; }
+.sketch-mode { display: grid; gap: 6px; margin-bottom: 8px; }
+.sketch-mode button { display: flex; align-items: center; justify-content: center; gap: 6px; height: 30px; border: 1px solid var(--line); border-radius: 7px; background: #0b121c; color: #8ca1b0; font-size: 10px; cursor: pointer; }
+.sketch-mode button[aria-pressed="true"] { color: #9ff5ff; border-color: rgb(0 242 254 / .34); background: rgb(0 242 254 / .055); }
+.sketch-mode i { width: 11px; height: 11px; border: 1px solid #ffffff60; border-radius: 50%; }
+.sketch-color { display: grid; justify-items: center; gap: 8px; min-height: 112px; padding: 10px 4px; border: 1px dashed var(--line); border-radius: 10px; color: #8ca7b5; font-size: 10px; }
+.sketch-color input { width: 58px; height: 35px; padding: 2px; border: 1px solid var(--line); border-radius: 6px; background: #101823; cursor: pointer; }
+.sketch-color strong { font: 10px ui-monospace, monospace; }
+.sketch-references .sketch-upload-wrap { margin-top: 12px; }
+.sketch-references .sketch-upload button { min-height: 90px; }
+.sketch-thumbnails { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-top: 10px; }
+.sketch-thumbnails > div { position: relative; min-width: 0; }
+.sketch-thumbnails img { width: 100%; aspect-ratio: 1; object-fit: contain; border: 1px solid var(--line); border-radius: 7px; background: #070d14; }
+.sketch-thumbnails button { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 5px; background: #090e16df; color: #d1eaf2; cursor: pointer; }
+.sketch-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 9px; margin-top: 14px; }
+.sketch-fields label { display: grid; gap: 7px; min-width: 0; color: #9aadb7; font-size: 11px; }
+.sketch-field-wide { grid-column: 1 / -1; }
+.sketch-fields input, .sketch-fields select { width: 100%; min-width: 0; height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; color: #dceef5; background: #090e16; color-scheme: dark; font-size: 11px; }
+.sketch-fields input::placeholder { color: #617682; }
+.sketch-lab .template-specs select { font-size: 11px; }
+.sketch-lab .template-toolbar > button, .sketch-lab .template-empty button { font-size: 12px; }
+.sketch-lab .template-empty p { max-width: 350px; color: #7b929f; }
+.sketch-lab .template-empty .template-orbit { width: 68px; height: 68px; }
+.sketch-lab .template-credit strong { font-size: 18px; }
+.sketch-lab .template-credit small { font-size: 9px; }
+.sketch-lab .template-credit > span { font-size: 10px; }
+.sketch-preview { position: absolute; inset: 40px; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 18px; margin: 0; }
+.sketch-preview > img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.sketch-preview figcaption { display: grid; gap: 6px; text-align: center; color: #8fa7b5; font-size: 11px; }
+.sketch-preview strong { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; font-weight: 400; color: #5d7685; }
+.sketch-preview figcaption a { color: #9ff5ff; text-decoration: none; }
+.sketch-result-switch { position: absolute; right: 18px; bottom: 18px; left: 18px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.sketch-result-switch button { min-width: 30px; height: 27px; padding: 0 8px; border: 1px solid rgb(0 242 254 / .28); border-radius: 7px; color: #c4e7ee; background: #0a1720e8; cursor: pointer; }
+.sketch-result-switch button[aria-pressed="true"] { color: #071117; background: #9ff5ff; }
+.sketch-service-note, .sketch-notice, .sketch-error { font-size: 11px; line-height: 1.7; }
+.sketch-service-note { margin: 10px 0 0; text-align: center; color: #748d9a; }
+.sketch-notice { padding: 12px; border: 1px solid rgb(0 242 254 / .2); border-radius: 10px; color: #a6ced9; background: rgb(0 242 254 / .04); }
+.sketch-error { color: #ffb4bd; }
+.sketch-lab :is(button, input, select, summary, a):focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+@media (max-width: 680px) {
+  .sketch-lab { height: auto; min-height: 100svh; overflow: visible; }
+  .sketch-lab .template-hud { position: sticky; height: 60px; grid-template-columns: 1fr auto; padding-inline: 16px; }
+  .sketch-lab .template-brand { display: none; }
+  .sketch-lab .template-layout { height: auto; grid-template-columns: minmax(0, 1fr); padding-top: 0; }
+  .sketch-lab .template-canvas { height: 50svh; min-height: 330px; grid-template-rows: 54px 1fr 32px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .sketch-lab .template-panel { overflow: visible; padding: 16px; }
+  .sketch-lab .template-empty .template-orbit { width: 42px; height: 42px; margin-bottom: 18px; }
+  .sketch-lab .template-empty button { margin-top: 15px; height: 32px; }
+  .sketch-lab .template-empty { padding: 20px; }
+  .sketch-lab .template-footer { padding-inline: 16px; font-size: 7px; }
+  .sketch-preview { inset: 24px; }
+}

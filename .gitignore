@@ -1,0 +1,72 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!backend/.env.example
+
+# vercel
+.vercel
+
+/dist/
+/.wrangler/
+/outputs/
+/work/
+/.pnpm-store/
+*.tsbuildinfo
+
+# Local AI studio backend runtime data
+/backend/.venv/
+/backend/data/*
+!/backend/data/compositions/
+!/backend/data/model-ai-restored/
+!/backend/data/model-source-sheets/
+!/backend/data/preset-hd/
+!/backend/data/preset-models/
+!/backend/data/preset-scenes/
+!/backend/data/preset-thumbs/
+!/backend/data/template-thumbs/
+!/backend/data/library-sources.json
+!/backend/data/studio.sqlite3
+/backend/.env
+/backend/本机API密钥.txt
+/.runtime/
+/.backend.*.log
+/.frontend.*.log
+/.local-site.*.log
+
+# Optional downloaded template assets and package-local caches
+/build-cache/
+*.zip
+*.tar.gz
+
+# Unrelated demo projects excluded from the home-textile-ai publish tree
+/分诊系统demo/
+/分诊系统demo1/

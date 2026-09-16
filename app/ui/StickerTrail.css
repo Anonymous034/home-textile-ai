@@ -1,0 +1,20 @@
+.sticker-trail { position: absolute; z-index: 5; inset: 0; overflow: hidden; touch-action: pan-y; }
+.sticker-trail__layer { position: absolute; z-index: 0; inset: 0; pointer-events: none; }
+.sticker-trail__content { position: relative; z-index: 1; width: 100%; height: 100%; display: grid; place-items: center; }
+.sticker-trail__item { position: absolute; top: 0; left: 0; width: clamp(24px, 2.4vw, 40px); aspect-ratio: 1; visibility: hidden; opacity: 0; will-change: transform, opacity; filter: drop-shadow(0 7px 12px rgb(0 0 0 / .28)); }
+.sticker-trail__art, .sticker-trail__art::before, .sticker-trail__art::after { position: absolute; display: block; content: ""; }
+.sticker-trail__art { inset: 8%; }
+.sticker--orb .sticker-trail__art { border-radius: 50%; background: radial-gradient(circle at 70% 26%, #f1ffcb 0 8%, #6ef4b5 32%, #13b8a8 60%, #2757db 100%); }
+.sticker--diamond .sticker-trail__art { inset: 17%; border-radius: 9px; transform: rotate(45deg); background: linear-gradient(135deg, #c99cff, #ff5e99 52%, #ff9a38); }
+.sticker--bow .sticker-trail__art::before, .sticker--bow .sticker-trail__art::after { top: 22%; width: 58%; height: 58%; border-radius: 42% 12% 42% 12%; }
+.sticker--bow .sticker-trail__art::before { left: 0; transform: rotate(38deg); background: linear-gradient(145deg, #4ee8ff, #437bff 58%, #b36aff); }
+.sticker--bow .sticker-trail__art::after { right: 0; transform: rotate(-38deg); background: linear-gradient(215deg, #ff86df, #875dff 55%, #42caff); }
+.sticker--pill .sticker-trail__art::before, .sticker--pill .sticker-trail__art::after { left: 12%; width: 76%; height: 42%; border-radius: 999px; background: linear-gradient(135deg, #dff2ff, #739cff 52%, #174cff); }
+.sticker--pill .sticker-trail__art::before { top: 4%; }
+.sticker--pill .sticker-trail__art::after { bottom: 4%; }
+.sticker--flower .sticker-trail__art { inset: 31%; border-radius: 50%; background: #f4bcff; box-shadow: 0 -15px 0 3px #af7cff, 15px 0 0 3px #915fff, 0 15px 0 3px #7654e8, -15px 0 0 3px #c9a8ff; }
+.sticker--bolt .sticker-trail__art { inset: 3% 18%; clip-path: polygon(44% 0, 100% 53%, 67% 55%, 86% 100%, 19% 48%, 49% 45%); background: linear-gradient(160deg, #ffd7cf, #ff8f64 47%, #ff4b15 76%, #ffad26); }
+.sticker--ring .sticker-trail__art { border-radius: 50%; background: conic-gradient(from 25deg, #ff8cea, #d849ff, #895bff, #ff8cea); }
+.sticker--ring .sticker-trail__art::after { inset: 31%; border-radius: 50%; background: #6034d6; box-shadow: inset 4px 5px 7px rgb(29 9 100 / .55); }
+.sticker--gem .sticker-trail__art { inset: 6% 18%; clip-path: polygon(50% 0, 88% 20%, 100% 66%, 68% 100%, 12% 84%, 0 33%); background: linear-gradient(145deg, #ffe2c4, #ff9e7c 43%, #ff5b23 75%, #ffba45); }
+@media (max-width: 760px), (pointer: coarse) { .sticker-trail__item { width: clamp(22px, 7vw, 32px); } }

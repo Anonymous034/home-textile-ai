@@ -1,0 +1,330 @@
+.demo-login-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden auto;
+  padding: 36px 20px;
+  color: #f5f5f7;
+  background:
+    radial-gradient(circle at 50% 46%, rgb(47 62 89 / 0.2), transparent 30%),
+    radial-gradient(circle at 18% 12%, rgb(32 56 82 / 0.12), transparent 28%),
+    linear-gradient(145deg, #05070a 0%, #090d13 48%, #020305 100%);
+  perspective: 1200px;
+}
+
+/* 独立极光背景层：只负责光效，不会挡住表单点击。 */
+.login-aurora {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* 全屏镜面扫光：宽光带从背景左下方斜向扫到右上方。 */
+.login-aurora::before {
+  content: "";
+  position: absolute;
+  width: 120vmax;
+  height: 120vmax;
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(103 194 255 / 0.02) 19%,
+    rgb(158 220 255 / 0.15) 34%,
+    rgb(255 255 255 / 0.5) 48%,
+    rgb(193 232 255 / 0.22) 57%,
+    rgb(119 129 255 / 0.06) 74%,
+    transparent 100%
+  );
+  filter: blur(28px);
+  mix-blend-mode: screen;
+  transform: translate3d(-150%, -58%, 0) rotate(-24deg) scaleY(0.46);
+  transform-origin: center;
+  will-change: transform, opacity;
+  animation: login-background-sweep 6s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+}
+
+/* 极淡点阵衬底，增强空间深度。 */
+.login-aurora::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  background-image: radial-gradient(circle, rgb(172 221 255 / 0.2) 0.8px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(ellipse at center, #000 0%, rgb(0 0 0 / 0.75) 42%, transparent 86%);
+}
+
+.login-aurora__glow {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(82px);
+  opacity: 0.56;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+}
+
+.login-aurora__glow--cyan {
+  width: min(62vw, 840px);
+  height: min(56vw, 720px);
+  top: -24%;
+  left: -12%;
+  background: radial-gradient(circle, rgb(0 242 254 / 0.92), rgb(18 148 235 / 0.3) 48%, transparent 72%);
+  animation: login-aurora-cyan 8s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+.login-aurora__glow--blue {
+  width: min(58vw, 780px);
+  height: min(54vw, 700px);
+  right: -16%;
+  bottom: -25%;
+  background: radial-gradient(circle, rgb(42 92 255 / 0.92), rgb(42 55 190 / 0.28) 51%, transparent 74%);
+  animation: login-aurora-blue 9.5s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+.login-aurora__glow--violet {
+  width: min(48vw, 650px);
+  height: min(44vw, 590px);
+  top: 3%;
+  right: 3%;
+  background: radial-gradient(circle, rgb(150 74 255 / 0.82), rgb(79 59 183 / 0.24) 52%, transparent 74%);
+  opacity: 0.46;
+  animation: login-aurora-violet 11s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+.login-aurora__glow--center {
+  width: min(52vw, 700px);
+  height: min(36vw, 480px);
+  top: 34%;
+  left: 27%;
+  background: radial-gradient(ellipse, rgb(79 172 254 / 0.54), rgb(58 99 210 / 0.18) 48%, transparent 74%);
+  opacity: 0.42;
+  filter: blur(96px);
+  animation: login-aurora-center 7s ease-in-out infinite alternate;
+}
+
+.demo-login {
+  --spot-x: 50;
+  --spot-y: 35;
+  position: relative;
+  z-index: 1;
+  width: min(680px, 100%);
+  padding: clamp(24px, 4vw, 42px);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.075), transparent 34%),
+    rgb(11 15 21 / 0.66);
+  box-shadow:
+    0 50px 110px rgb(0 0 0 / 0.64),
+    0 12px 32px rgb(0 0 0 / 0.38),
+    inset 0 1px 0 rgb(255 255 255 / 0.13),
+    inset 0 -1px 0 rgb(255 255 255 / 0.035);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+  backdrop-filter: blur(12px) saturate(125%);
+  transform-style: preserve-3d;
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* 光斑位置由鼠标控制，边缘同时出现冷色高光。 */
+.demo-login__spotlight {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      circle at calc(var(--spot-x) * 1%) calc(var(--spot-y) * 1%),
+      rgb(255 255 255 / 0.19) 0%,
+      rgb(142 220 255 / 0.1) 15%,
+      transparent 43%
+    ),
+    linear-gradient(120deg, rgb(255 255 255 / 0.08), transparent 26% 70%, rgb(97 202 255 / 0.055));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.045),
+    inset 22px 18px 48px rgb(255 255 255 / 0.018);
+  mix-blend-mode: screen;
+  transform: translateZ(1px);
+}
+
+/* 表单内容整体向观察者方向浮起，形成 3D 前后层级。 */
+.demo-login__back,
+.demo-login__heading,
+.demo-login form {
+  position: relative;
+  z-index: 2;
+  transform-style: preserve-3d;
+}
+
+.demo-login__back { display: inline-block; transform: translateZ(24px); }
+.demo-login__heading { transform: translateZ(30px); }
+.demo-login form { transform: translateZ(22px); }
+
+/* 输入控件不再单独向前偏移，避免3D透视导致可见位置和点击位置不一致。 */
+.demo-login input,
+.demo-login button,
+.demo-login__question {
+  position: relative;
+  z-index: 4;
+  pointer-events: auto;
+  transform: none;
+}
+
+@media (min-width: 621px) {
+  .demo-login { zoom: 0.67; }
+}
+
+.demo-login__back { color: #a8adb7; text-decoration: none; font-size: 14px; }
+.demo-login__back:hover { color: #fff; }
+.demo-login__heading { margin: 30px 0 34px; }
+.demo-login__heading p { margin: 0 0 8px; color: #83d9ff; font-size: 14px; }
+.demo-login__heading h1 { margin: 0; font-size: clamp(28px, 5vw, 42px); letter-spacing: -0.04em; }
+.demo-login__heading span { display: block; margin-top: 10px; color: #9399a4; font-size: 14px; }
+.demo-login form { display: grid; gap: 26px; }
+.demo-login__field { display: grid; gap: 12px; }
+.demo-login__field > span,
+.demo-login__group legend { color: #eeeef2; font-size: 17px; font-weight: 600; }
+.demo-login__group { min-width: 0; margin: 0; padding: 0; border: 0; }
+.demo-login__group legend { margin-bottom: 12px; }
+
+.demo-login input,
+.demo-login__question,
+.demo-login__code-row button,
+.demo-login__refresh {
+  min-height: 60px;
+  border: 1px solid rgb(255 255 255 / 0.13);
+  border-radius: 10px;
+  color: #f4f4f6;
+  background: rgb(2 5 9 / 0.62);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.045),
+    0 10px 24px rgb(0 0 0 / 0.16);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  font: inherit;
+  font-size: 17px;
+}
+
+.demo-login input { width: 100%; padding: 0 18px; outline: none; }
+.demo-login input::placeholder { color: #717884; }
+.demo-login input:focus {
+  border-color: rgb(126 217 255 / 0.7);
+  box-shadow: 0 0 0 3px rgb(73 186 234 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+.demo-login__human-row { display: grid; grid-template-columns: 1fr 1fr 64px; gap: 12px; }
+.demo-login__question { display: grid; place-items: center; background: rgb(18 23 31 / 0.63); font-weight: 700; }
+.demo-login__refresh,
+.demo-login__code-row button { cursor: pointer; background: rgb(18 23 31 / 0.66); }
+.demo-login__refresh { font-size: 26px; }
+.demo-login__refresh:hover,
+.demo-login__code-row button:hover { border-color: rgb(139 214 246 / 0.4); background: rgb(27 34 44 / 0.76); }
+.demo-login__code-row { display: grid; grid-template-columns: 1fr 168px; gap: 12px; }
+.demo-login__message { min-height: 20px; margin: -8px 0 -8px; color: #91dbf9; font-size: 13px; }
+
+.demo-login__submit {
+  min-height: 64px;
+  border: 1px solid rgb(255 255 255 / 0.64);
+  border-radius: 10px;
+  color: #071017;
+  background: linear-gradient(110deg, #f5f7f8, #cdeefa 52%, #edf7fa);
+  box-shadow: 0 14px 34px rgb(34 137 178 / 0.16), inset 0 1px 0 #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+}
+.demo-login__submit:hover { background: #fff; }
+.demo-login__submit:disabled { cursor: wait; opacity: 0.65; }
+
+@keyframes login-aurora-cyan {
+  0% { transform: translate3d(-18%, -14%, 0) scale(0.76); opacity: 0.34; }
+  52% { transform: translate3d(24%, 21%, 0) scale(1.22); opacity: 0.68; }
+  100% { transform: translate3d(44%, 2%, 0) scale(0.9); opacity: 0.44; }
+}
+
+@keyframes login-aurora-blue {
+  0% { transform: translate3d(18%, 15%, 0) scale(0.78); opacity: 0.38; }
+  48% { transform: translate3d(-28%, -19%, 0) scale(1.24); opacity: 0.66; }
+  100% { transform: translate3d(-9%, -42%, 0) scale(0.9); opacity: 0.46; }
+}
+
+@keyframes login-aurora-violet {
+  0% { transform: translate3d(24%, -18%, 0) scale(0.72); opacity: 0.25; }
+  52% { transform: translate3d(-31%, 27%, 0) scale(1.28); opacity: 0.56; }
+  100% { transform: translate3d(-48%, 6%, 0) scale(0.88); opacity: 0.34; }
+}
+
+@keyframes login-aurora-center {
+  from { transform: translate3d(-18%, 8%, 0) scale(0.72); opacity: 0.2; }
+  to { transform: translate3d(22%, -12%, 0) scale(1.34); opacity: 0.58; }
+}
+
+@keyframes login-background-sweep {
+  0%, 10% {
+    opacity: 0;
+    transform: translate3d(-150%, -58%, 0) rotate(-24deg) scaleY(0.46);
+  }
+  17% { opacity: 0.32; }
+  48% {
+    opacity: 0.58;
+    transform: translate3d(-50%, -50%, 0) rotate(-24deg) scaleY(0.52);
+  }
+  68% {
+    opacity: 0.26;
+    transform: translate3d(52%, -42%, 0) rotate(-24deg) scaleY(0.46);
+  }
+  75%, 100% {
+    opacity: 0;
+    transform: translate3d(82%, -38%, 0) rotate(-24deg) scaleY(0.42);
+  }
+}
+
+@media (max-width: 620px) {
+  .demo-login-page { align-items: start; padding: 14px; perspective: none; }
+  .login-aurora__glow { min-width: 440px; min-height: 440px; filter: blur(86px); opacity: 0.34; }
+  .login-aurora::before { width: 160vmax; height: 160vmax; filter: blur(24px); }
+  .login-aurora__glow--cyan { top: -14%; left: -58%; }
+  .login-aurora__glow--blue { right: -62%; bottom: -9%; }
+  .login-aurora__glow--violet { top: 28%; right: -68%; opacity: 0.24; }
+  .login-aurora__glow--center { top: 30%; left: -20%; filter: blur(100px); }
+  .login-aurora::after { background-size: 24px 24px; opacity: 0.14; }
+  .demo-login {
+    padding: 24px 18px;
+    border-radius: 16px;
+    transform: none !important;
+    animation: login-mobile-float 6s ease-in-out infinite alternate;
+  }
+  .demo-login__heading { margin: 24px 0 28px; }
+  .demo-login form { gap: 22px; }
+  .demo-login__human-row { grid-template-columns: 1fr 58px; }
+  .demo-login__question { grid-column: 1 / -1; }
+  .demo-login__code-row { grid-template-columns: 1fr 120px; }
+  .demo-login input,
+  .demo-login__question,
+  .demo-login__code-row button,
+  .demo-login__refresh { min-height: 54px; font-size: 15px; }
+}
+
+@keyframes login-mobile-float {
+  from { translate: 0 0; }
+  to { translate: 0 5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-aurora::before,
+  .login-aurora__glow,
+  .demo-login { animation: none; }
+  .login-aurora__glow { transform: none; }
+  .demo-login { transform: none !important; }
+}

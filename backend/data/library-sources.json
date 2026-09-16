@@ -1,0 +1,266 @@
+{
+  "models": [
+    {
+      "id": "approved_model_01",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 1,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-01.jpg"
+    },
+    {
+      "id": "approved_model_02",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 2,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-02.jpg"
+    },
+    {
+      "id": "approved_model_03",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 3,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-03.jpg"
+    },
+    {
+      "id": "approved_model_04",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 4,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-04.jpg"
+    },
+    {
+      "id": "approved_model_05",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 5,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-05.jpg"
+    },
+    {
+      "id": "approved_model_06",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 6,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-06.jpg"
+    },
+    {
+      "id": "approved_model_07",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 7,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-07.jpg"
+    },
+    {
+      "id": "approved_model_08",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 8,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-08.jpg"
+    },
+    {
+      "id": "approved_model_09",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 9,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-09.jpg"
+    },
+    {
+      "id": "approved_model_10",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 10,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-10.jpg"
+    },
+    {
+      "id": "approved_model_11",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 11,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-11.jpg"
+    },
+    {
+      "id": "approved_model_12",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 12,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-12.jpg"
+    },
+    {
+      "id": "approved_model_13",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 13,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-13.jpg"
+    },
+    {
+      "id": "approved_model_14",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 14,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-14.jpg"
+    },
+    {
+      "id": "approved_model_15",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 15,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-15.jpg"
+    },
+    {
+      "id": "approved_model_16",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 16,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-16.jpg"
+    },
+    {
+      "id": "approved_model_17",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 17,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-17.jpg"
+    },
+    {
+      "id": "approved_model_18",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 18,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-18.jpg"
+    },
+    {
+      "id": "approved_model_19",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 19,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-19.jpg"
+    },
+    {
+      "id": "approved_model_20",
+      "source_type": "user_provided",
+      "source_sheet": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\model-source-sheets\\user-approved-models-01.png",
+      "crop_index": 20,
+      "local_file": "C:\\Users\\马翾\\Documents\\ChatGPT\\家具web\\backend\\data\\preset-models\\approved-model-20.jpg"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "bedroom_scene_01",
+      "pexels_photo_id": 3933240,
+      "source_page": "https://www.pexels.com/photo/3933240/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_02",
+      "pexels_photo_id": 8251598,
+      "source_page": "https://www.pexels.com/photo/8251598/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_03",
+      "pexels_photo_id": 35236647,
+      "source_page": "https://www.pexels.com/photo/35236647/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_04",
+      "pexels_photo_id": 37833409,
+      "source_page": "https://www.pexels.com/photo/37833409/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_05",
+      "pexels_photo_id": 34766501,
+      "source_page": "https://www.pexels.com/photo/34766501/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_06",
+      "pexels_photo_id": 6527045,
+      "source_page": "https://www.pexels.com/photo/6527045/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_07",
+      "pexels_photo_id": 7614411,
+      "source_page": "https://www.pexels.com/photo/7614411/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_08",
+      "pexels_photo_id": 19836795,
+      "source_page": "https://www.pexels.com/photo/19836795/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_09",
+      "pexels_photo_id": 7033676,
+      "source_page": "https://www.pexels.com/photo/7033676/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_10",
+      "pexels_photo_id": 14101565,
+      "source_page": "https://www.pexels.com/photo/14101565/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_11",
+      "pexels_photo_id": 37460678,
+      "source_page": "https://www.pexels.com/photo/37460678/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_12",
+      "pexels_photo_id": 29120674,
+      "source_page": "https://www.pexels.com/photo/29120674/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_13",
+      "pexels_photo_id": 20390778,
+      "source_page": "https://www.pexels.com/photo/20390778/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_14",
+      "pexels_photo_id": 14788378,
+      "source_page": "https://www.pexels.com/photo/14788378/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_15",
+      "pexels_photo_id": 6489083,
+      "source_page": "https://www.pexels.com/photo/6489083/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_16",
+      "pexels_photo_id": 5883725,
+      "source_page": "https://www.pexels.com/photo/5883725/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_17",
+      "pexels_photo_id": 12805883,
+      "source_page": "https://www.pexels.com/photo/12805883/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_18",
+      "pexels_photo_id": 6956846,
+      "source_page": "https://www.pexels.com/photo/6956846/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_19",
+      "pexels_photo_id": 28542174,
+      "source_page": "https://www.pexels.com/photo/28542174/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "bedroom_scene_20",
+      "pexels_photo_id": 2030119,
+      "source_page": "https://www.pexels.com/photo/2030119/",
+      "license": "Pexels License"
+    }
+  ]
+}

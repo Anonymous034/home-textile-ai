@@ -1,0 +1,16 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #07090f; color: #effcff; font-family: Inter, "Microsoft YaHei UI", sans-serif; }
+.key-setup-page { min-height: 100svh; display: grid; place-items: center; padding: 24px; overflow: hidden; background: radial-gradient(circle at 50% 30%, rgb(0 242 254 / .13), transparent 34%), radial-gradient(circle at 70% 75%, rgb(79 172 254 / .12), transparent 32%), #07090f; }
+.key-setup-card { width: min(520px, 100%); padding: 34px; border: 1px solid rgb(0 242 254 / .25); border-radius: 24px; background: rgb(15 18 28 / .78); box-shadow: 0 28px 90px rgb(0 0 0 / .5), 0 0 45px rgb(0 242 254 / .07); backdrop-filter: blur(18px); }
+.key-setup-tag { color: #00f2fe; font: 700 11px/1.2 ui-monospace, monospace; letter-spacing: .16em; }
+.key-setup-card h1 { margin: 14px 0 10px; font-size: clamp(28px, 6vw, 42px); }
+.key-setup-card p { margin: 0 0 28px; color: #92a6b8; font-size: 14px; line-height: 1.8; }
+.key-setup-card form { display: grid; gap: 12px; }
+.key-setup-card label { font-size: 13px; font-weight: 700; }
+.key-setup-card input { width: 100%; min-height: 52px; padding: 0 16px; border: 1px solid rgb(157 187 217 / .22); border-radius: 12px; outline: none; background: #050810; color: #fff; font: 15px ui-monospace, monospace; }
+.key-setup-card input:focus { border-color: #00f2fe; box-shadow: 0 0 0 3px rgb(0 242 254 / .1), 0 0 26px rgb(0 242 254 / .1); }
+.key-setup-card button { min-height: 52px; margin-top: 5px; border: 0; border-radius: 12px; background: linear-gradient(100deg, #82fbff, #4facfe); color: #041018; font-size: 15px; font-weight: 900; cursor: pointer; }
+.key-setup-card button:disabled { cursor: not-allowed; filter: grayscale(.7); opacity: .45; }
+.key-setup-status { display: block; margin-top: 18px; padding: 13px 15px; border: 1px solid rgb(0 242 254 / .2); border-radius: 10px; color: #8af8ff; background: rgb(0 242 254 / .06); font-size: 13px; line-height: 1.6; }
+.key-setup-card > a { display: inline-block; margin-top: 22px; color: #9cb0c1; font-size: 13px; text-decoration: none; }
+.key-setup-card > a:hover { color: #fff; }
