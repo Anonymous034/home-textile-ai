@@ -12,6 +12,7 @@ type UserMenuProps = {
 const menuItems = [
   { icon: "▰", label: "我的作品", href: "/my-works" },
   { icon: "▱", label: "积分中心", href: "/credits" },
+  { icon: "¥", label: "积分充值", href: "/recharge", accent: true },
   { icon: "▤", label: "发票管理" },
   { icon: "▣", label: "登录管理" },
   { icon: "♕", label: "会员优惠", accent: true },

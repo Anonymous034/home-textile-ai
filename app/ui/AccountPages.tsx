@@ -30,7 +30,6 @@ function WorkCard({ work }: { work: Work }) {
     {src && <a href={src} download={`${work.tool_name}-${work.id}.png`}>下载作品</a>}
   </article>;
 }
-
 export function MyWorksPage() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,8 +63,8 @@ export function CreditsPage() {
   return <main className="account-page account-page--credits">
     <header><a href="/dashboard">← 返回功能页</a><h1>积分中心</h1><p>查看当前账号的积分余额与扣除记录。</p></header>
     {loading ? <p role="status">正在读取积分…</p> : error ? <p role="alert">{error}</p> : <>
-      <section className="account-balance"><span>剩余积分</span><strong>{balance === null ? "未配置" : balance}</strong><small>{balance === null ? "本站尚未设置积分余额，目前不会实际扣除积分。" : "分"}</small></section>
-      <section className="account-history"><h2>扣除记录</h2>{events.length ? <ul>{events.map((event) => <li key={event.id}><div><strong>{event.reason}</strong><time>{new Date(event.created_at).toLocaleString("zh-CN")}</time></div><b>{event.delta}</b></li>)}</ul> : <p>暂无扣除记录</p>}</section>
+      <section className="account-balance"><span>剩余积分</span><strong>{balance === null ? "未配置" : balance}</strong><small>{balance === null ? "本站尚未设置积分余额，目前不会实际扣除积分。" : "分"}</small><a className="account-recharge-link" href="/recharge">去充值</a></section>
+      <section className="account-history"><h2>积分记录</h2>{events.length ? <ul>{events.map((event) => <li key={event.id}><div><strong>{event.reason}</strong><time>{new Date(event.created_at).toLocaleString("zh-CN")}</time></div><b className={event.delta > 0 ? "is-positive" : ""}>{event.delta > 0 ? "+" : ""}{event.delta}</b></li>)}</ul> : <p>暂无积分记录</p>}</section>
       <section className="account-history"><h2>生成使用记录</h2><p>按功能页面标注的单张积分估算；余额未配置时不实际扣费。</p>{pending.length ? <ul>{pending.map((item) => <li key={item.id}><div><strong>{item.reason}</strong><time>{new Date(item.created_at).toLocaleString("zh-CN")}</time></div><b>预计 {item.points} 分</b></li>)}</ul> : <p>暂无已保存的对应作品</p>}</section>
     </>}
   </main>;
