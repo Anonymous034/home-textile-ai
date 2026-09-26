@@ -38,6 +38,7 @@ from .template_compose import router as template_compose_router
 from .pattern import router as pattern_router, shutdown_pattern
 from .sketch import router as sketch_router
 from .account import router as account_router, initialize_account, record_work
+from .payments import router as payment_router
 
 ASPECTS = {"1:1": (1, 1), "3:4": (3, 4), "4:3": (4, 3), "9:16": (9, 16), "16:9": (16, 9)}
 LONG_EDGES = {"1K": 1024, "2K": 2048, "4K": 4096}
@@ -340,6 +341,7 @@ app.include_router(template_compose_router)
 app.include_router(pattern_router)
 app.include_router(sketch_router)
 app.include_router(account_router)
+app.include_router(payment_router)
 app.add_middleware(ReplicaGuard)
 app.add_middleware(
     CORSMiddleware,

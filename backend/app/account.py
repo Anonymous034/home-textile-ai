@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+from decimal import Decimal, InvalidOperation
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
@@ -11,6 +12,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from .database import RESULT_DIR, connect, utc_now
+from .alipay_gateway import AlipayGatewayError, get_alipay_gateway, load_alipay_settings
 from .user_key import current_user_key
 
 router = APIRouter(prefix="/api/account", tags=["account"])
@@ -69,6 +71,19 @@ def initialize_account() -> None:
         CREATE INDEX IF NOT EXISTS idx_payment_orders_owner_time
             ON payment_orders(account_id, created_at DESC);
         """)
+        payment_columns = {row[1] for row in db.execute("PRAGMA table_info(payment_orders)")}
+        additions = {
+            "provider": "TEXT NOT NULL DEFAULT 'mock'",
+            "environment": "TEXT NOT NULL DEFAULT 'mock'",
+            "checkout_url": "TEXT",
+            "alipay_trade_no": "TEXT",
+            "paid_amount_cents": "INTEGER",
+            "last_notify_at": "TEXT",
+            "failure_code": "TEXT",
+        }
+        for column, definition in additions.items():
+            if column not in payment_columns:
+                db.execute(f"ALTER TABLE payment_orders ADD COLUMN {column} {definition}")
         # Existing local outputs predate account tracking. Keep them available
         # to the demo owner; future personal-key outputs are attributed at save.
         for path in RESULT_DIR.rglob("*"):
@@ -131,7 +146,16 @@ def credits() -> dict:
 def _order_dict(row) -> dict:
     value = dict(row)
     value["is_custom"] = bool(value["is_custom"])
+    value["provider"] = value.get("provider") or "mock"
+    value["environment"] = value.get("environment") or "mock"
+    value["payment_mode"] = "mock" if value["provider"] == "mock" else f"alipay_{value['environment']}"
     return value
+
+
+def _response(row, **extra) -> dict:
+    value = _order_dict(row)
+    is_mock = value["provider"] == "mock" or value["environment"] == "sandbox"
+    return {"is_mock": is_mock, "provider": value["provider"], "environment": value["environment"], "order": value, **extra}
 
 
 def _owned_order(db, order_id: str):
@@ -140,7 +164,7 @@ def _owned_order(db, order_id: str):
         (order_id, account_id()),
     ).fetchone()
     if not row:
-        raise HTTPException(404, "模拟支付订单不存在")
+        raise HTTPException(404, "支付订单不存在")
     return row
 
 
@@ -178,24 +202,36 @@ def create_payment_order(request: PaymentOrderCreate) -> dict:
         is_custom = 1
 
     created = datetime.now(UTC)
-    order_id = "MOCK" + created.strftime("%Y%m%d%H%M%S") + uuid4().hex[:10].upper()
+    settings = load_alipay_settings()
+    gateway = get_alipay_gateway()
+    provider = "alipay" if gateway else "mock"
+    environment = settings.mode if gateway else "mock"
+    prefix = "ALI" if gateway else "MOCK"
+    order_id = prefix + created.strftime("%Y%m%d%H%M%S") + uuid4().hex[:10].upper()
+    checkout_url = None
+    if gateway:
+        try:
+            checkout_url = gateway.create_checkout(order_id, amount_cents, f"{package_name} · {points} 积分")
+        except AlipayGatewayError as exc:
+            raise HTTPException(502, str(exc)) from exc
     with connect() as db:
         db.execute(
             """INSERT INTO payment_orders(
                 id,account_id,amount_cents,points,package_id,package_name,is_custom,status,
-                created_at,completed_at,expires_at
-            ) VALUES(?,?,?,?,?,?,?,'pending',?,NULL,?)""",
+                created_at,completed_at,expires_at,provider,environment,checkout_url
+            ) VALUES(?,?,?,?,?,?,?,'pending',?,NULL,?,?,?,?)""",
             (order_id, account_id(), amount_cents, points, package_id, package_name, is_custom,
-             created.isoformat(), (created + ORDER_TTL).isoformat()),
+             created.isoformat(), (created + ORDER_TTL).isoformat(), provider, environment, checkout_url),
         )
         row = db.execute("SELECT * FROM payment_orders WHERE id=?", (order_id,)).fetchone()
-    return {"is_mock": True, "order": _order_dict(row)}
+    return _response(row)
+
 
 @router.get("/payment-orders/{order_id}")
 def get_payment_order(order_id: str) -> dict:
     with connect() as db:
         row = _mark_expired(db, _owned_order(db, order_id))
-    return {"is_mock": True, "order": _order_dict(row)}
+    return _response(row)
 
 
 @router.post("/payment-orders/{order_id}/complete")
@@ -203,9 +239,11 @@ def complete_payment_order(order_id: str) -> dict:
     with connect() as db:
         db.execute("BEGIN IMMEDIATE")
         row = _mark_expired(db, _owned_order(db, order_id))
+        if row["provider"] != "mock":
+            raise HTTPException(409, "支付宝订单只能由支付宝验签结果确认，不能手动完成")
         if row["status"] == "succeeded":
             account = db.execute("SELECT balance FROM credit_accounts WHERE account_id=?", (account_id(),)).fetchone()
-            return {"is_mock": True, "already_completed": True, "balance": account["balance"], "order": _order_dict(row)}
+            return _response(row, already_completed=True, balance=account["balance"])
         if row["status"] == "expired":
             db.commit()
             raise HTTPException(409, "模拟支付订单已过期，请重新创建")
@@ -231,14 +269,110 @@ def complete_payment_order(order_id: str) -> dict:
         )
         completed_row = db.execute("SELECT * FROM payment_orders WHERE id=?", (row["id"],)).fetchone()
         balance = db.execute("SELECT balance FROM credit_accounts WHERE account_id=?", (account_id(),)).fetchone()["balance"]
-    return {"is_mock": True, "already_completed": False, "balance": balance, "order": _order_dict(completed_row)}
+    return _response(completed_row, already_completed=False, balance=balance)
+
+
+def amount_to_cents(value: str | None) -> int:
+    try:
+        amount = Decimal(value or "")
+    except InvalidOperation as exc:
+        raise ValueError("支付金额格式无效") from exc
+    if not amount.is_finite() or amount < 0 or amount.as_tuple().exponent < -2:
+        raise ValueError("支付金额格式无效")
+    return int(amount * 100)
+
+
+def settle_alipay_order(order_id: str, trade_no: str, paid_amount_cents: int, notify_time: str | None = None) -> dict:
+    """Credit an Alipay order once. The caller must verify the provider signature first."""
+    with connect() as db:
+        db.execute("BEGIN IMMEDIATE")
+        row = db.execute("SELECT * FROM payment_orders WHERE id=?", (order_id,)).fetchone()
+        if not row or row["provider"] != "alipay":
+            raise ValueError("支付宝订单不存在")
+        if row["amount_cents"] != paid_amount_cents:
+            db.execute("UPDATE payment_orders SET failure_code=? WHERE id=?", ("amount_mismatch", order_id))
+            raise ValueError("支付金额与订单不一致")
+        if row["status"] == "succeeded":
+            if row["alipay_trade_no"] and row["alipay_trade_no"] != trade_no:
+                raise ValueError("支付宝交易号不一致")
+            return {"already_completed": True, "order": _order_dict(row)}
+
+        completed = utc_now()
+        event_id = f"alipay:{order_id}"
+        updated = db.execute(
+            """UPDATE payment_orders SET status='succeeded',completed_at=?,alipay_trade_no=?,
+               paid_amount_cents=?,last_notify_at=?,failure_code=NULL
+               WHERE id=? AND status!='succeeded'""",
+            (completed, trade_no, paid_amount_cents, notify_time or completed, order_id),
+        )
+        if updated.rowcount != 1:
+            raise ValueError("订单状态更新失败")
+        reason = "支付宝沙箱充值" if row["environment"] == "sandbox" else "支付宝充值"
+        db.execute(
+            """INSERT OR IGNORE INTO credit_events(id,account_id,delta,reason,work_id,created_at)
+               VALUES(?,?,?,?,?,?)""",
+            (event_id, row["account_id"], row["points"], f"{reason} · ¥{paid_amount_cents / 100:.2f}", order_id, completed),
+        )
+        if db.execute("SELECT changes()").fetchone()[0] == 1:
+            db.execute(
+                """INSERT INTO credit_accounts(account_id,balance,updated_at) VALUES(?,?,?)
+                   ON CONFLICT(account_id) DO UPDATE SET
+                     balance=COALESCE(credit_accounts.balance,0)+excluded.balance,
+                     updated_at=excluded.updated_at""",
+                (row["account_id"], row["points"], completed),
+            )
+        completed_row = db.execute("SELECT * FROM payment_orders WHERE id=?", (order_id,)).fetchone()
+    return {"already_completed": False, "order": _order_dict(completed_row)}
+
+
+@router.post("/payment-orders/{order_id}/sync")
+def sync_payment_order(order_id: str) -> dict:
+    with connect() as db:
+        row = _mark_expired(db, _owned_order(db, order_id))
+    if row["provider"] == "mock" or row["status"] == "succeeded":
+        return _response(row)
+    gateway = get_alipay_gateway()
+    if not gateway:
+        raise HTTPException(503, "支付宝沙箱配置不可用，暂时无法查询订单")
+    try:
+        result = gateway.query(order_id)
+    except AlipayGatewayError as exc:
+        raise HTTPException(502, str(exc)) from exc
+    if result.get("success") and result.get("trade_status") in {"TRADE_SUCCESS", "TRADE_FINISHED"}:
+        try:
+            settle_alipay_order(order_id, str(result.get("trade_no") or ""), amount_to_cents(str(result.get("total_amount") or "")))
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+    elif result.get("trade_status") == "TRADE_CLOSED":
+        with connect() as db:
+            db.execute("UPDATE payment_orders SET status='cancelled' WHERE id=? AND status!='succeeded'", (order_id,))
+    with connect() as db:
+        refreshed = _owned_order(db, order_id)
+        balance_row = db.execute("SELECT balance FROM credit_accounts WHERE account_id=?", (account_id(),)).fetchone()
+    return _response(refreshed, balance=balance_row["balance"] if balance_row else None)
 
 
 @router.post("/payment-orders/{order_id}/cancel")
 def cancel_payment_order(order_id: str) -> dict:
     with connect() as db:
         row = _mark_expired(db, _owned_order(db, order_id))
-        if row["status"] == "pending":
-            db.execute("UPDATE payment_orders SET status='cancelled' WHERE id=?", (row["id"],))
-            row = db.execute("SELECT * FROM payment_orders WHERE id=?", (row["id"],)).fetchone()
-    return {"is_mock": True, "order": _order_dict(row)}
+    if row["status"] != "pending":
+        return _response(row)
+    if row["provider"] == "alipay":
+        gateway = get_alipay_gateway()
+        if not gateway:
+            raise HTTPException(503, "支付宝沙箱配置不可用，暂时无法取消订单")
+        try:
+            query = gateway.query(order_id)
+            if query.get("success") and query.get("trade_status") in {"TRADE_SUCCESS", "TRADE_FINISHED"}:
+                settle_alipay_order(order_id, str(query.get("trade_no") or ""), amount_to_cents(str(query.get("total_amount") or "")))
+            else:
+                close = gateway.close(order_id)
+                if not close.get("success") and close.get("sub_code") not in {"ACQ.TRADE_NOT_EXIST", "ACQ.TRADE_STATUS_ERROR"}:
+                    raise AlipayGatewayError("支付宝订单关闭失败")
+        except (AlipayGatewayError, ValueError) as exc:
+            raise HTTPException(502, str(exc)) from exc
+    with connect() as db:
+        db.execute("UPDATE payment_orders SET status='cancelled' WHERE id=? AND status='pending'", (row["id"],))
+        row = db.execute("SELECT * FROM payment_orders WHERE id=?", (row["id"],)).fetchone()
+    return _response(row)

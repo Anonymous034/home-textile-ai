@@ -17,6 +17,7 @@
   font-family: inherit;
   font-size: 16px;
 }
+
 .recharge-page *, .recharge-page *::before, .recharge-page *::after { box-sizing: border-box; }
 .recharge-page button, .recharge-page input { font: inherit; }
 .recharge-page button, .recharge-page a { touch-action: manipulation; }
@@ -27,7 +28,9 @@
 .recharge-back { min-height: 44px; display: inline-flex; align-items: center; color: #c7d0cb; text-decoration: none; font-size: 14px; font-weight: 600; }
 .recharge-back:hover { color: #fff; }
 .recharge-demo-tag { min-height: 32px; padding: 0 12px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #286f49; border-radius: 999px; color: #9ce9bd; background: #10281b; font-size: 13px; font-weight: 650; }
-.recharge-demo-tag i, .recharge-summary__notice i, .wechat-label i, .payment-status-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: var(--recharge-green); }
+.recharge-demo-tag i, .recharge-summary__notice i, .payment-channel-label i, .payment-status-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: var(--recharge-green); }
+.recharge-demo-tag.is-sandbox { border-color: #315f8f; color: #b8dcff; background: #102239; }
+.recharge-demo-tag.is-sandbox i { background: #1677ff; }
 .recharge-heading { margin-top: 24px; display: flex; justify-content: space-between; align-items: end; gap: 40px; }
 .recharge-eyebrow { display: block; margin-bottom: 8px; color: var(--recharge-green-soft); font-size: 12px; font-weight: 750; }
 .recharge-heading h1 { margin: 0; font-size: clamp(32px, 4vw, 48px); line-height: 1.12; text-wrap: balance; }
@@ -96,7 +99,9 @@
 .payment-panel__header { padding-bottom: 24px; display: flex; justify-content: space-between; gap: 30px; border-bottom: 1px solid var(--recharge-border); }
 .payment-panel__header h2 { margin: 10px 0 5px; font-size: 26px; text-wrap: balance; }
 .payment-panel__header p { margin: 0; color: var(--recharge-muted); line-height: 1.6; }
-.wechat-label { display: inline-flex; align-items: center; gap: 8px; color: var(--recharge-green-soft); font-size: 13px; font-weight: 750; }
+.payment-channel-label { display: inline-flex; align-items: center; gap: 8px; color: var(--recharge-green-soft); font-size: 13px; font-weight: 750; }
+.payment-channel-label.is-alipay { color: #8bc4ff; }
+.payment-channel-label.is-alipay i { background: #1677ff; }
 .payment-timer { flex: 0 0 auto; text-align: right; }
 .payment-timer span { display: block; margin-bottom: 4px; color: var(--recharge-subtle); font-size: 12px; }
 .payment-timer strong { font-size: 26px; font-variant-numeric: tabular-nums; }
@@ -106,6 +111,10 @@
 .demo-qr { width: 220px; max-width: 100%; aspect-ratio: 1; margin-inline: auto; display: grid; place-items: center; border: 14px solid #fff; border-radius: 10px; background-color: #fff; background-image: repeating-conic-gradient(#101411 0 25%, transparent 0 50%); background-size: 20px 20px; }
 .demo-qr > i { width: 82px; height: 64px; display: grid; place-items: center; border: 6px solid #fff; border-radius: 8px; color: #fff; background: #101411; font-size: 13px; font-style: normal; font-weight: 850; }
 .demo-qr small { display: block; font-size: 10px; }
+.alipay-checkout { min-height: 220px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; border: 1px solid #285a8f; border-radius: 16px; background: linear-gradient(145deg, #0d2035, #101923); text-align: center; }
+.alipay-checkout__mark { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 16px; color: #fff; background: #1677ff; font-size: 34px; font-weight: 850; box-shadow: 0 14px 34px rgba(22,119,255,.22); }
+.alipay-checkout strong { margin-top: 5px; color: #fff; font-size: 18px; }
+.alipay-checkout span { color: #9cb5ce; font-size: 13px; line-height: 1.5; }
 .payment-detail > span { color: var(--recharge-muted); font-size: 13px; }
 .payment-detail > strong { display: block; margin: 6px 0; font-size: 44px; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .payment-detail > p { margin: 0 0 22px; color: var(--recharge-muted); }
@@ -135,6 +144,8 @@
 .payment-result--muted .recharge-primary { margin-top: 12px; padding-inline: 24px; }
 
 .recharge-page :where(button, a, input):focus-visible { outline: 3px solid #85efb4; outline-offset: 3px; }
+.recharge-page a[aria-disabled="true"] { opacity: .48; cursor: not-allowed; pointer-events: none; }
+.recharge-sr-status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 html:has(.recharge-page), body:has(.recharge-page) { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
 
 @media (max-width: 900px) {

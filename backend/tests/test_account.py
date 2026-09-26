@@ -2,15 +2,28 @@ import tempfile
 import unittest
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
 
-from backend.app import account, database
+from backend.app import account, database, payments
 from backend.app.user_key import current_user_key
 
 
 class AccountTests(unittest.TestCase):
+    class FakeAlipayGateway:
+        def __init__(self, *, verified=True):
+            self.verified = verified
+            self.settings = SimpleNamespace(app_id="sandbox-app", seller_id="", public_base_url="http://testserver")
+
+        def create_checkout(self, order_id, amount_cents, subject):
+            return f"https://openapi.alipaydev.com/gateway.do?out_trade_no={order_id}&amount={amount_cents}"
+
+        def verify_parameters(self, parameters):
+            return self.verified
+
     def test_works_are_scoped_and_balance_is_not_invented(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -113,3 +126,62 @@ class AccountTests(unittest.TestCase):
                     account.complete_payment_order("not-found")
                 self.assertEqual(missing.exception.status_code, 404)
                 self.assertIsNone(account.credits()["balance"])
+
+    def test_alipay_sandbox_order_and_settlement_are_idempotent(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            results = root / "results"
+            results.mkdir()
+            fake = self.FakeAlipayGateway()
+            settings = SimpleNamespace(mode="sandbox")
+            with (
+                patch.object(database, "DB_PATH", root / "test.sqlite3"),
+                patch.object(account, "RESULT_DIR", results),
+                patch.object(account, "get_alipay_gateway", return_value=fake),
+                patch.object(account, "load_alipay_settings", return_value=settings),
+            ):
+                account.initialize_account()
+                created = account.create_payment_order(account.PaymentOrderCreate(package_id="starter"))
+                order = created["order"]
+                self.assertEqual(order["provider"], "alipay")
+                self.assertEqual(order["environment"], "sandbox")
+                self.assertTrue(order["checkout_url"].startswith("https://openapi.alipaydev.com/"))
+
+                first = account.settle_alipay_order(order["id"], "trade-001", 19_900)
+                second = account.settle_alipay_order(order["id"], "trade-001", 19_900)
+                self.assertFalse(first["already_completed"])
+                self.assertTrue(second["already_completed"])
+                self.assertEqual(account.credits()["balance"], 2_200)
+                self.assertEqual(len(account.credits()["events"]), 1)
+                self.assertIn("支付宝沙箱充值", account.credits()["events"][0]["reason"])
+
+    def test_alipay_notification_requires_signature_app_and_amount(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            results = root / "results"
+            results.mkdir()
+            fake = self.FakeAlipayGateway()
+            settings = SimpleNamespace(mode="sandbox")
+            app = FastAPI()
+            app.include_router(payments.router)
+            with (
+                patch.object(database, "DB_PATH", root / "test.sqlite3"),
+                patch.object(account, "RESULT_DIR", results),
+                patch.object(account, "get_alipay_gateway", return_value=fake),
+                patch.object(account, "load_alipay_settings", return_value=settings),
+                patch.object(payments, "get_alipay_gateway", return_value=fake),
+            ):
+                account.initialize_account()
+                order = account.create_payment_order(account.PaymentOrderCreate(package_id="starter"))["order"]
+                client = TestClient(app)
+                base = {"app_id": "sandbox-app", "out_trade_no": order["id"], "trade_no": "trade-002", "trade_status": "TRADE_SUCCESS", "total_amount": "199.00", "sign": "test", "sign_type": "RSA2"}
+
+                fake.verified = False
+                self.assertEqual(client.post("/api/payments/alipay/notify", data=base).text, "failure")
+                fake.verified = True
+                self.assertEqual(client.post("/api/payments/alipay/notify", data={**base, "app_id": "wrong"}).text, "failure")
+                self.assertEqual(client.post("/api/payments/alipay/notify", data={**base, "total_amount": "198.00"}).text, "failure")
+                self.assertEqual(client.post("/api/payments/alipay/notify", data=base).text, "success")
+                self.assertEqual(client.post("/api/payments/alipay/notify", data=base).text, "success")
+                self.assertEqual(account.credits()["balance"], 2_200)
+                self.assertEqual(len(account.credits()["events"]), 1)
