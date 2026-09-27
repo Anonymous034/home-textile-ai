@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import "./DemoLoginForm.css";
 
 const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+const HOME_PATH = "/";
 
 const challenges = [
   { id: "subtract-17-1", label: "17 - 1 = ?" },
@@ -156,7 +157,7 @@ export default function DemoLoginForm() {
   return (
     <section className="demo-login" ref={cardRef} aria-labelledby="demo-login-title">
       <span className="demo-login__spotlight" aria-hidden="true" />
-      <a className="demo-login__back" href="/">← 返回首页</a>
+      <a className="demo-login__back" href={HOME_PATH}>← 返回首页</a>
       <div className="demo-login__heading">
         <p>家纺AI视觉</p>
         <h1 id="demo-login-title">登录 / 注册</h1>
