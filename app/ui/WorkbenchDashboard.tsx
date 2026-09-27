@@ -175,9 +175,11 @@ export default function WorkbenchDashboard() {
   return (
     <main className="workbench" ref={rootRef}>
       <header className="workbench__topbar">
-        <a className="workbench__brand" href="/dashboard" aria-label="返回工作台">
-          <span aria-hidden="true">42</span>
-          <strong>家纺AI视觉工作台</strong>
+        <a className="workbench__brand" href="/dashboard" aria-label="返回强视觉ai生图工作台">
+          <span aria-hidden="true">
+            <img src="/brand-logo.jpg" alt="" />
+          </span>
+          <strong>强视觉ai生图</strong>
         </a>
         <div className="workbench__topbar-center" aria-live="polite">
           {galleryItems[activeIndex].title}

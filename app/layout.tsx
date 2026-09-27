@@ -3,7 +3,7 @@ import "./globals.css";
 import KeyConnectionMonitor from "./ui/KeyConnectionMonitor";
 
 export const metadata: Metadata = {
-  title: "家纺AI视觉｜全链路工作台",
+  title: "强视觉ai生图｜全链路工作台",
   description: "家纺AI视觉全链路工作台动态首页。",
 };
 
