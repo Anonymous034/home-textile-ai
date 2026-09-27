@@ -46,7 +46,7 @@
 }
 
 .replica-brand { display: flex; align-items: center; gap: 9px; color: #eaffff; text-decoration: none; }
-.replica-brand i { width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid rgb(0 242 254 / 0.38); border-radius: 8px; color: #021015; background: linear-gradient(135deg, #dcffff, #76ecff); box-shadow: 0 0 18px rgb(0 242 254 / 0.12); font: normal 900 10px/1 ui-monospace, monospace; }
+.replica-brand img { width: 29px; height: 29px; display: block; overflow: hidden; border: 1px solid rgb(0 242 254 / 0.38); border-radius: 8px; object-fit: cover; background: #08151b; box-shadow: 0 0 18px rgb(0 242 254 / 0.12); }
 .replica-brand span { font: 800 11px/1 ui-monospace, monospace; letter-spacing: 0.08em; }
 .replica-mode { height: 30px; border: 1px solid rgb(0 242 254 / 0.2); border-radius: 8px; color: #dffbff; background: rgb(0 242 254 / 0.055); font-size: 11px; cursor: pointer; }
 .replica-mode span { margin-right: 6px; color: var(--cyan); }

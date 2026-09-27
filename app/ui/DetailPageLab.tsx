@@ -94,7 +94,7 @@ export default function DetailPageLab() {
     <main className="detail-lab">
       <header className="detail-topbar">
         <a href="/dashboard?tool=detail-page" className="detail-back"><Icon name="back" /><span>返回工作台</span></a>
-        <div className="detail-brand"><i>42</i><div><strong>DETAIL PAGE LAB</strong><small>AI 商品详情页控制台</small></div></div>
+        <div className="detail-brand"><img src="/brand-logo.jpg" alt="" /><div><strong>DETAIL PAGE LAB</strong><small>AI 商品详情页控制台</small></div></div>
         <div className="detail-system"><i /><span>AI CORE ONLINE</span><b>24ms</b></div>
       </header>
 

@@ -19,7 +19,7 @@
 .detail-back svg { width: 17px; }
 .detail-back:hover { color: var(--cyan); transform: translateX(-2px); }
 .detail-brand { display: flex; align-items: center; gap: 11px; }
-.detail-brand > i { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(0, 242, 254, .35); border-radius: 10px; color: var(--cyan); background: rgba(0, 242, 254, .06); box-shadow: inset 0 0 18px rgba(0, 242, 254, .08), 0 0 18px rgba(0, 242, 254, .08); font: normal 800 12px/1 ui-monospace, monospace; }
+.detail-brand > img { width: 34px; height: 34px; display: block; overflow: hidden; border: 1px solid rgba(0, 242, 254, .35); border-radius: 10px; object-fit: cover; background: rgba(0, 242, 254, .06); box-shadow: inset 0 0 18px rgba(0, 242, 254, .08), 0 0 18px rgba(0, 242, 254, .08); }
 .detail-brand > div { display: grid; gap: 4px; }
 .detail-brand strong { font: 800 12px/1 ui-monospace, monospace; letter-spacing: .13em; }
 .detail-brand small { color: #596170; font-size: 9px; letter-spacing: .12em; }

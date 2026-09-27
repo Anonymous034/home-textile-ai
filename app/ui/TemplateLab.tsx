@@ -237,7 +237,7 @@ export default function TemplateLab() {
 
   return (
     <main className="template-lab">
-      <header className="template-hud"><a href="/dashboard?tool=template" className="template-back"><Icon name="back"/><span>返回</span></a><div className="template-brand"><i>42</i><div><strong>TEMPLATE COMPOSER</strong><small>AI 模板复用控制台</small></div></div><div className={`template-status${aiReady ? "" : " is-offline"}`} role="status"><i/><span>{aiReady ? "AI 已连接" : "AI 检查 / 重连中"}</span><b>图片 {imageConnected ? "已连接" : "未连接"} · 策划 {planConnected ? "已连接" : "未连接"}</b></div></header>
+      <header className="template-hud"><a href="/dashboard?tool=template" className="template-back"><Icon name="back"/><span>返回</span></a><div className="template-brand"><img src="/brand-logo.jpg" alt="" /><div><strong>TEMPLATE COMPOSER</strong><small>AI 模板复用控制台</small></div></div><div className={`template-status${aiReady ? "" : " is-offline"}`} role="status"><i/><span>{aiReady ? "AI 已连接" : "AI 检查 / 重连中"}</span><b>图片 {imageConnected ? "已连接" : "未连接"} · 策划 {planConnected ? "已连接" : "未连接"}</b></div></header>
       <div className="template-layout">
         <section className="template-canvas" aria-label="模板合成画布">
           <div className="template-toolbar"><div><span>按住 Ctrl 多选</span><i/><span>双击查看详情</span><i/><span>拖拽框选</span></div><button type="button" onClick={() => fileRefs.current.hero?.click()}><Icon name="upload"/>导入到画布</button></div>

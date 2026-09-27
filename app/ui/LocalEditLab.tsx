@@ -229,7 +229,7 @@ export default function LocalEditLab({ initialFile, backHref = "/dashboard?tool=
     <main className="template-lab local-edit-lab">
       <header className="template-hud">
         {onBack ? <button type="button" className="template-back" onClick={onBack}><Icon name="back" /><span>返回花型制作</span></button> : <a className="template-back" href={backHref}><Icon name="back" /><span>返回</span></a>}
-        <div className="template-brand"><i>42</i><div><strong>LOCAL EDIT LAB</strong><small>AI 图像局部精修控制台</small></div></div>
+        <div className="template-brand"><img src="/brand-logo.jpg" alt="" /><div><strong>LOCAL EDIT LAB</strong><small>AI 图像局部精修控制台</small></div></div>
         <div className="template-status"><i /><span>LOCAL WORKSPACE</span><b>本地预览</b></div>
       </header>
 

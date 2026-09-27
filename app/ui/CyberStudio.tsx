@@ -494,7 +494,7 @@ export default function CyberStudio() {
         </button>
         <div className="cyber-dock__content">
           <div className="cyber-dock__title">
-            <div><span>42 / VISUAL LAB</span><h1>AI 虚拟影棚</h1></div>
+            <div className="cyber-dock__brand"><img src="/brand-logo.jpg" alt="" /><span>VISUAL LAB</span><h1>AI 虚拟影棚</h1></div>
             <em className={backendOnline ? "is-online" : ""}>{backendOnline ? "AGENT PLAN" : "OFFLINE"}</em>
           </div>
 

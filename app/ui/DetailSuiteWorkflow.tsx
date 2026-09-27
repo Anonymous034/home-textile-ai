@@ -168,7 +168,7 @@ export default function DetailSuiteWorkflow() {
   }
 
   return <main className="detail-suite">
-    <header className="ds-header"><a href="/dashboard?tool=detail-page">‹ <span>返回工作台</span></a><div className="ds-brand"><b>42</b><div><strong>DETAIL PAGE LAB</strong><small>商品详情页套件</small></div></div><span className="ds-header-tag">策划 → 审阅 → 出图</span></header>
+    <header className="ds-header"><a href="/dashboard?tool=detail-page">‹ <span>返回工作台</span></a><div className="ds-brand"><img src="/brand-logo.jpg" alt="" /><div><strong>DETAIL PAGE LAB</strong><small>商品详情页套件</small></div></div><span className="ds-header-tag">策划 → 审阅 → 出图</span></header>
     <div className="ds-layout">
       <aside className="ds-params" aria-label="参数配置区">
         <div className="ds-section-title"><span>INPUT / 01</span><h1>产品与生成参数</h1></div>

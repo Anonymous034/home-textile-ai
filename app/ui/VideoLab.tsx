@@ -49,7 +49,7 @@ export default function VideoLab() {
   return <main className="template-lab video-lab">
     <header className="template-hud">
       <a className="template-back" href="/dashboard?tool=video"><Icon name="back" /><span>返回工作台</span></a>
-      <div className="template-brand"><i>42</i><div><strong>VIRAL VIDEO LAB</strong><small>AI 家具视频创作控制台</small></div></div>
+      <div className="template-brand"><img src="/brand-logo.jpg" alt="" /><div><strong>VIRAL VIDEO LAB</strong><small>AI 家具视频创作控制台</small></div></div>
       <div className="template-status"><i /><span>LOCAL WORKSPACE</span><b>本地预览</b></div>
     </header>
 

@@ -263,7 +263,7 @@ export default function ProfessionalStudio() {
       </section>
 
       <aside className="professional-dock">
-        <header><span>42 / COMMERCIAL LAB</span><h2>生成控制台</h2><p>三张图片全部必传</p></header>
+        <header><div className="professional-dock__brand"><img src="/brand-logo.jpg" alt="" /><span>COMMERCIAL LAB</span></div><h2>生成控制台</h2><p>三张图片全部必传</p></header>
 
         <section className="professional-module">
           <div className="professional-module__head"><span>01</span><strong>素材与特征</strong><em>INPUT</em></div>

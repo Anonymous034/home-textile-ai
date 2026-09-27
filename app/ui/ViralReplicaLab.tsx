@@ -211,7 +211,7 @@ export default function ViralReplicaLab() {
   return (
     <main className="replica-lab">
       <header className="replica-topbar">
-        <a className="replica-brand" href="/dashboard?tool=replicate"><i>42</i><span>返回</span></a>
+        <a className="replica-brand" href="/dashboard?tool=replicate"><img src="/brand-logo.jpg" alt="" /><span>返回</span></a>
         <div className="replica-mode">◇ 爆款复刻</div>
         <div className="replica-status"><span>单张参考 · 真实生成</span><b>{configured ? "CONFIG LOADED" : "LOCAL WORKSPACE"}</b></div>
         <button className="replica-import" type="button" disabled={locked} onClick={() => mainInputRef.current?.click()}>⇧ 导入产品图</button>

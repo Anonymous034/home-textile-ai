@@ -128,7 +128,7 @@ export default function SketchLab() {
   return <main className="template-lab sketch-lab">
     <header className="template-hud">
       <a className="template-back" href="/dashboard?tool=sketch"><Icon name="back" /><span>返回</span></a>
-      <div className="template-brand"><i>42</i><div><strong>SKETCH IMAGE LAB</strong><small>AI 画稿生图控制台</small></div></div>
+      <div className="template-brand"><img src="/brand-logo.jpg" alt="" /><div><strong>SKETCH IMAGE LAB</strong><small>AI 画稿生图控制台</small></div></div>
       <div className="template-status"><i /><span>LOCAL WORKSPACE</span><b>本地预览</b></div>
     </header>
     <div className="template-layout">

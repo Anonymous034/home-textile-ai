@@ -86,7 +86,7 @@ export default function BuyerShowLab() {
     <main className="template-lab buyer-lab">
       <header className="template-hud">
         <a className="template-back" href="/dashboard?tool=buyer-show"><Icon name="back" /><span>返回</span></a>
-        <div className="template-brand"><i>42</i><div><strong>BUYER SHOW LAB</strong><small>AI 买家秀创作控制台</small></div></div>
+        <div className="template-brand"><img src="/brand-logo.jpg" alt="" /><div><strong>BUYER SHOW LAB</strong><small>AI 买家秀创作控制台</small></div></div>
         <div className="template-status"><i /><span>LOCAL WORKSPACE</span><b>本地预览</b></div>
       </header>
 
