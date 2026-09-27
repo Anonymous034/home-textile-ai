@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from .database import RESULT_DIR, connect, utc_now
 from .alipay_gateway import AlipayGatewayError, get_alipay_gateway, load_alipay_settings
-from .user_key import current_user_key
+from .user_key import current_account_id, current_user_key
 
 router = APIRouter(prefix="/api/account", tags=["account"])
 
@@ -37,6 +37,9 @@ class PaymentOrderCreate(BaseModel):
 
 
 def account_id() -> str:
+    session_account = current_account_id.get()
+    if session_account:
+        return session_account
     key = current_user_key.get()
     return "key:" + hashlib.sha256(key.encode()).hexdigest() if key else "demo-user-123"
 

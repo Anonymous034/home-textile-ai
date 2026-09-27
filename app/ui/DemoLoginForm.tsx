@@ -4,6 +4,8 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import "./DemoLoginForm.css";
 
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+
 const challenges = [
   { id: "subtract-17-1", label: "17 - 1 = ?" },
   { id: "add-8-4", label: "8 + 4 = ?" },
@@ -16,9 +18,13 @@ export default function DemoLoginForm() {
   const [humanAnswer, setHumanAnswer] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [inviteCode, setInviteCode] = useState("");
+  const [mode, setMode] = useState<"login" | "register">("login");
   const [challengeIndex, setChallengeIndex] = useState(0);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [requestingCode, setRequestingCode] = useState(false);
+  const [codeRequested, setCodeRequested] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -72,14 +78,49 @@ export default function DemoLoginForm() {
 
   const challenge = challenges[challengeIndex];
 
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const timer = window.setInterval(() => setCountdown((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [countdown]);
+
   const refreshChallenge = () => {
     setChallengeIndex((current) => (current + 1) % challenges.length);
     setHumanAnswer("");
     setMessage("");
   };
 
-  const showDemoCode = () => {
-    setMessage(phone.trim() === "123" ? "演示验证码：123456" : "请先输入演示手机号 123");
+  const requestCode = async () => {
+    if (!phone.trim()) {
+      setMessage("请先输入手机号码");
+      return;
+    }
+    setRequestingCode(true);
+    setMessage("正在发送验证码…");
+    try {
+      const response = await fetch(`${API}/api/auth/request-code`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone,
+          human_answer: humanAnswer,
+          challenge_id: challenge.id,
+        }),
+      });
+      const result = (await response.json()) as { ok?: boolean; message?: string; detail?: string; expires_in?: number };
+      if (!response.ok || !result.ok) {
+        setMessage(result.message || result.detail || "验证码发送失败，请稍后重试");
+        return;
+      }
+      setCodeRequested(true);
+      setCountdown(60);
+      setMessage(`${result.message || "验证码已发送"}${result.expires_in ? `，${Math.floor(result.expires_in / 60)} 分钟内有效` : ""}`);
+    } catch {
+      setMessage("暂时无法连接验证服务，请稍后再试");
+    } finally {
+      setRequestingCode(false);
+    }
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -88,21 +129,19 @@ export default function DemoLoginForm() {
     setMessage("正在验证填写的信息…");
 
     try {
-      const response = await fetch("/api/demo-login", {
+      const response = await fetch(`${API}/api/auth/verify-code`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone,
-          humanAnswer,
-          verificationCode,
-          inviteCode,
-          challengeId: challenge.id,
+          code: verificationCode,
         }),
       });
-      const result = (await response.json()) as { ok: boolean; message?: string };
+      const result = (await response.json()) as { ok: boolean; message?: string; detail?: string };
 
       if (!response.ok || !result.ok) {
-        setMessage(result.message || "验证没有通过，请检查后重试");
+        setMessage(result.message || result.detail || "验证没有通过，请检查后重试");
         return;
       }
 
@@ -121,7 +160,12 @@ export default function DemoLoginForm() {
       <div className="demo-login__heading">
         <p>家纺AI视觉</p>
         <h1 id="demo-login-title">登录 / 注册</h1>
-        <span>这是演示页面，请使用下方提示的信息登录。</span>
+        <span>使用手机号验证码安全登录；首次验证会自动创建账号。</span>
+      </div>
+
+      <div className="demo-login__mode" role="tablist" aria-label="登录方式">
+        <button type="button" role="tab" aria-selected={mode === "login"} className={mode === "login" ? "is-active" : ""} onClick={() => setMode("login")}>登录</button>
+        <button type="button" role="tab" aria-selected={mode === "register"} className={mode === "register" ? "is-active" : ""} onClick={() => setMode("register")}>注册</button>
       </div>
 
       <form onSubmit={submit}>
@@ -132,7 +176,7 @@ export default function DemoLoginForm() {
             onChange={(event) => setPhone(event.target.value)}
             inputMode="numeric"
             autoComplete="tel"
-            placeholder="演示手机号：123"
+            placeholder="例如 +86 138 0000 0000"
           />
         </label>
 
@@ -164,7 +208,9 @@ export default function DemoLoginForm() {
               placeholder="6位验证码"
               aria-label="验证码"
             />
-            <button type="button" onClick={showDemoCode}>获取验证码</button>
+            <button type="button" onClick={requestCode} disabled={requestingCode || countdown > 0}>
+              {requestingCode ? "发送中…" : countdown > 0 ? `${countdown}s 后重发` : codeRequested ? "重新获取" : "获取验证码"}
+            </button>
           </div>
         </fieldset>
 
@@ -177,9 +223,9 @@ export default function DemoLoginForm() {
           />
         </label>
 
-        <p className="demo-login__message" aria-live="polite">{message || "演示账号：123　验证码：123456"}</p>
+        <p className="demo-login__message" aria-live="polite">{message || "验证码有效期 5 分钟；开发环境请使用服务器配置的 DEMO_SMS_CODE。"}</p>
         <button className="demo-login__submit" type="submit" disabled={submitting}>
-          {submitting ? "正在登录…" : "登录 / 注册"}
+          {submitting ? "正在验证…" : mode === "register" ? "验证并注册" : "验证码登录"}
         </button>
       </form>
     </section>

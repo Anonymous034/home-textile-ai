@@ -1,6 +1,6 @@
 # 家纺 AI 视觉工作台
 
-这是可上传到 GitHub 的源码整理版。前端使用 Vinext/React，后端使用 FastAPI。包含首页、花型创作、影棚、爆款复刻、详情页、模板、画稿生图、局部编辑、高清、买家秀、作品与积分页面，以及个人 API Key 的非生图验证和持续连通检查。
+这是可上传到 GitHub 的源码整理版。前端使用 Vinext/React，后端使用 FastAPI。包含首页、手机号验证码登录/注册、个人设置、花型创作、影棚、爆款复刻、详情页、模板、画稿生图、局部编辑、高清、买家秀、作品与积分页面，以及个人 API Key 的非生图验证和持续连通检查。
 
 ## 本地启动（Windows）
 
@@ -13,7 +13,7 @@ backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt
 Copy-Item backend/.env.example backend/.env
 ```
 
-按需在本机 `backend/.env` 填写站点提供的 API Key、图片模型配置及视觉策划接口配置。这个文件已被 Git 忽略，不要提交密钥。随后双击 `启动本地网站.cmd`，或执行 `./start-ai-studio.ps1`；前端为 `http://127.0.0.1:3000`，后端接口文档为 `http://127.0.0.1:8000/docs`。个人密钥入口也可在首页临时填写 Key；它只用于当前浏览器标签页，不会覆盖站点配置。
+按需在本机 `backend/.env` 填写站点提供的 API Key、图片模型配置及视觉策划接口配置。这个文件已被 Git 忽略，不要提交密钥。默认 `DEMO_SMS_MODE=mock` 只用于联调，使用 `DEMO_SMS_CODE` 完成验证码流程；要向真实手机发短信，需要接入短信供应商并提供签名、模板和服务密钥。随后双击 `启动本地网站.cmd`，或执行 `./start-ai-studio.ps1`；前端为 `http://127.0.0.1:3000`，后端接口文档为 `http://127.0.0.1:8000/docs`。登录后可在 `/settings` 验证个人 API Key；它只用于当前浏览器会话，不会覆盖站点配置。
 
 ## 目录
 
