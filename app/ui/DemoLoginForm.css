@@ -190,6 +190,9 @@
 .demo-login__heading p { margin: 0 0 8px; color: #83d9ff; font-size: 14px; }
 .demo-login__heading h1 { margin: 0; font-size: clamp(28px, 5vw, 42px); letter-spacing: -0.04em; }
 .demo-login__heading span { display: block; margin-top: 10px; color: #9399a4; font-size: 14px; }
+.demo-login__mode { position: relative; z-index: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: -12px 0 26px; padding: 4px; border: 1px solid rgb(255 255 255 / 0.1); border-radius: 10px; background: rgb(2 5 9 / 0.48); }
+.demo-login__mode button { min-height: 42px; border: 0; border-radius: 7px; color: #8e98a8; background: transparent; cursor: pointer; font: inherit; font-size: 14px; }
+.demo-login__mode button.is-active { color: #081118; background: #d9f3fb; box-shadow: 0 4px 14px rgb(34 137 178 / 0.16); }
 .demo-login form { display: grid; gap: 26px; }
 .demo-login__field { display: grid; gap: 12px; }
 .demo-login__field > span,
@@ -229,6 +232,7 @@
 .demo-login__refresh { font-size: 26px; }
 .demo-login__refresh:hover,
 .demo-login__code-row button:hover { border-color: rgb(139 214 246 / 0.4); background: rgb(27 34 44 / 0.76); }
+.demo-login__code-row button:disabled { cursor: wait; opacity: 0.55; }
 .demo-login__code-row { display: grid; grid-template-columns: 1fr 168px; gap: 12px; }
 .demo-login__message { min-height: 20px; margin: -8px 0 -8px; color: #91dbf9; font-size: 13px; }
 

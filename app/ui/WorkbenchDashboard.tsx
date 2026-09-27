@@ -42,11 +42,27 @@ export default function WorkbenchDashboard() {
   const draggedRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuUser, setMenuUser] = useState(demoUser);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (sessionStorage.getItem("studio-personal-ark-key")) {
-      setMenuUser({ userId: "personal-key", displayName: "个人密钥用户", email: "个人密钥", fullName: "个人密钥用户" });
+      window.queueMicrotask(() => {
+        setMenuUser({ userId: "personal-key", displayName: "个人密钥用户", email: "个人密钥", fullName: "个人密钥用户" });
+      });
     }
+    const api = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+    fetch(`${api}/api/auth/me`, { credentials: "include", cache: "no-store" })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data: { authenticated?: boolean; user?: { id?: string; phone?: string; display_name?: string } } | null) => {
+        if (!data?.authenticated || !data.user) return;
+        setMenuUser({
+          userId: data.user.id || data.user.phone || "phone-user",
+          displayName: data.user.display_name || data.user.phone || "手机用户",
+          email: data.user.phone || "",
+          fullName: data.user.display_name || "",
+        });
+      })
+      .catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -54,6 +70,14 @@ export default function WorkbenchDashboard() {
     const stage = stageRef.current;
     const deck = deckRef.current;
     if (!root || !stage || !deck) return;
+
+    // Expanded mode uses a responsive grid; clear carousel transforms first.
+    if (isExpanded) {
+      gsap.set(deck.querySelectorAll<HTMLElement>(".infinite-card"), {
+        clearProps: "transform,opacity,visibility,zIndex,pointerEvents",
+      });
+      return;
+    }
 
     const requestedTool = new URLSearchParams(window.location.search).get("tool");
     let currentIndex = Math.max(0, galleryItems.findIndex((item) => item.id === requestedTool));
@@ -157,7 +181,7 @@ export default function WorkbenchDashboard() {
       stage.removeEventListener("wheel", onWheel);
       context.revert();
     };
-  }, []);
+  }, [isExpanded]);
 
   const finishDrag = (clientX: number) => {
     const startX = pointerStartRef.current;
@@ -186,19 +210,30 @@ export default function WorkbenchDashboard() {
       </header>
 
       <section
-        className="infinite-slider"
+        className={`infinite-slider${isExpanded ? " infinite-slider--expanded" : ""}`}
         ref={stageRef}
         aria-label="家具AI创作工具轮播"
       >
         <div className="infinite-slider__hint" aria-hidden="true">
           <span>10 项创作工具</span>
           <i />
-          <span>拖动、滚轮或方向键切换</span>
+          <span>{isExpanded ? "全部展开" : "拖动、滚轮或方向键切换"}</span>
         </div>
+
+        <button
+          className="infinite-slider__toggle"
+          type="button"
+          onClick={() => setIsExpanded((expanded) => !expanded)}
+          aria-expanded={isExpanded}
+          aria-controls="创作工具卡片"
+        >
+          {isExpanded ? "收起" : "展开全部"}
+        </button>
 
         <div
           className="infinite-slider__deck"
           ref={deckRef}
+          id="创作工具卡片"
           onPointerDown={(event) => {
             pointerStartRef.current = event.clientX;
             draggedRef.current = false;
@@ -206,7 +241,7 @@ export default function WorkbenchDashboard() {
           onPointerUp={(event) => {
             const featureLink = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[data-feature-link="true"]');
             const wasDragged = finishDrag(event.clientX);
-            if (featureLink && !wasDragged && Number(featureLink.dataset.index) === activeIndex) {
+            if (featureLink && !wasDragged && (isExpanded || Number(featureLink.dataset.index) === activeIndex)) {
               event.preventDefault();
               window.location.assign(featureLink.href);
             }
@@ -232,7 +267,7 @@ export default function WorkbenchDashboard() {
                       event.preventDefault();
                       return;
                     }
-                    if (index !== activeIndex) {
+                    if (!isExpanded && index !== activeIndex) {
                       event.preventDefault();
                       selectSlideRef.current(index);
                     }

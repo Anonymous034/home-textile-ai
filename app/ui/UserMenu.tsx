@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChatGPTUser } from "../chatgpt-auth";
 
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+
 type UserMenuProps = {
   user: ChatGPTUser | null;
   avatarUrl?: string | null;
@@ -13,6 +15,7 @@ const menuItems = [
   { icon: "▰", label: "我的作品", href: "/my-works" },
   { icon: "▱", label: "积分中心", href: "/credits" },
   { icon: "¥", label: "积分充值", href: "/recharge", accent: true },
+  { icon: "⚙", label: "个人设置", href: "/settings" },
   { icon: "▤", label: "发票管理" },
   { icon: "▣", label: "登录管理" },
   { icon: "♕", label: "会员优惠", accent: true },
@@ -84,13 +87,20 @@ export default function UserMenu({ user, avatarUrl, logoutHref = "/signout-with-
                 </button>
               </div>
 
-              <a className="user-menu__logout" href={logoutHref} onClick={() => { sessionStorage.removeItem("studio-personal-ark-key"); sessionStorage.removeItem("studio-personal-plan-key"); }}>
+              <a className="user-menu__logout" href={logoutHref} onClick={(event) => {
+                event.preventDefault();
+                sessionStorage.removeItem("studio-personal-ark-key");
+                sessionStorage.removeItem("studio-personal-plan-key");
+                fetch(`${API}/api/auth/logout`, { method: "POST", credentials: "include" })
+                  .catch(() => undefined)
+                  .finally(() => window.location.assign(logoutHref));
+              }}>
                 <span aria-hidden="true">↪</span>
                 退出登录
               </a>
             </>
           ) : (
-            <a className="user-menu__login" href="/signin-with-chatgpt?return_to=%2F">登录</a>
+            <a className="user-menu__login" href="/login">登录 / 注册</a>
           )}
         </div>
       )}

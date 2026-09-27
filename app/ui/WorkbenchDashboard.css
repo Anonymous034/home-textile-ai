@@ -93,6 +93,35 @@
   background: #4d4d55;
 }
 
+.infinite-slider__toggle {
+  position: absolute;
+  z-index: 45;
+  top: calc(var(--topbar-height) + 14px);
+  right: 30px;
+  min-height: 34px;
+  padding: 0 15px;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: 999px;
+  color: #e9e9ed;
+  background: rgb(18 18 22 / 0.76);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.04);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+}
+
+.infinite-slider__toggle:hover {
+  border-color: rgb(255 255 255 / 0.7);
+  background: rgb(255 255 255 / 0.12);
+  transform: translateY(-1px);
+}
+
+.infinite-slider__toggle:focus-visible {
+  outline: 2px solid #a987ff;
+  outline-offset: 3px;
+}
+
 .infinite-slider__deck {
   position: absolute;
   z-index: 2;
@@ -105,6 +134,49 @@
 }
 
 .infinite-slider__deck:active { cursor: grabbing; }
+
+.infinite-slider--expanded {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 28px;
+  touch-action: pan-y;
+}
+
+.infinite-slider--expanded .infinite-slider__deck {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: auto;
+  height: auto;
+  min-height: calc(100svh - var(--topbar-height));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  align-content: start;
+  gap: clamp(14px, 2vw, 24px);
+  padding: calc(var(--topbar-height) + 86px) clamp(18px, 4vw, 56px) 118px;
+  transform: none !important;
+  transform-style: flat;
+  cursor: default;
+}
+
+.infinite-slider--expanded .infinite-card {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 100%;
+  max-width: none;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.infinite-slider--expanded .infinite-card:hover {
+  transform: translateY(-3px) !important;
+}
+
+.infinite-slider--expanded .infinite-slider__controls { display: none; }
 
 .infinite-card {
   position: absolute;
@@ -198,11 +270,17 @@
   .workbench__brand strong { font-size: 12px; }
   .infinite-slider__hint { top: calc(var(--topbar-height) + 18px); left: 18px; }
   .infinite-slider__hint i { width: 24px; }
+  .infinite-slider__toggle { top: calc(var(--topbar-height) + 12px); right: 14px; min-height: 32px; padding: 0 12px; }
   .infinite-slider__deck { top: 47%; }
   .infinite-card { width: min(82vw, 430px); border-radius: 18px; }
   .infinite-slider__controls { bottom: 28px; gap: 8px; }
   .infinite-slider__controls button { min-width: 88px; height: 42px; padding: 0 16px; }
   .infinite-slider__controls span { min-width: 48px; }
+  .infinite-slider--expanded .infinite-slider__deck {
+    grid-template-columns: 1fr;
+    padding: calc(var(--topbar-height) + 74px) 14px 106px;
+  }
+  .infinite-slider--expanded .infinite-slider__hint { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
