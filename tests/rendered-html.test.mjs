@@ -20,7 +20,7 @@ test("server-renders the finished product home page", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>家纺AI视觉｜全链路工作台<\/title>/i);
+  assert.match(html, /<title>强视觉ai生图｜全链路工作台<\/title>/i);
   assert.match(html, /家纺AI视觉/);
   assert.match(html, /全链路工作台/);
   assert.doesNotMatch(html, /Your site is taking shape|codex-preview/i);

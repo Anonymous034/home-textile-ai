@@ -15,7 +15,7 @@ async function render(pathname) {
 
 test("buyer-show renders the reference controls with truthful preview status", async () => {
   const html = await render("/buyer-show");
-  for (const label of ["买家秀｜家纺AI视觉工作台", "买家秀画布", "产品图片", "更真实", "更精致", "生成张数", "产品信息", "产品名称", "核心卖点", "图片比例", "分辨率", "补充说明", "生成图像"] ) {
+  for (const label of ["买家秀｜强视觉ai生图", "买家秀画布", "产品图片", "更真实", "更精致", "生成张数", "产品信息", "产品名称", "核心卖点", "图片比例", "分辨率", "补充说明", "生成图像"] ) {
     assert.ok(html.includes(label), `Missing ${label}`);
   }
   assert.match(html, /name="buyer-style"/);

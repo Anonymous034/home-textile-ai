@@ -14,16 +14,16 @@ const demoUser = {
 };
 
 const galleryItems = [
-  { id: "studio", href: "/studio", title: "AI 虚拟影棚", image: "/bento-gallery/ai-studio.png", ratio: "490 / 413" },
-  { id: "replicate", href: "/replicate", title: "爆款复刻", image: "/bento-gallery/bestseller-v2.png", ratio: "1367 / 1151" },
-  { id: "detail-page", href: "/detail-page", title: "详情页制作", image: "/bento-gallery/detail-page.png", ratio: "498 / 405" },
-  { id: "template", href: "/template", title: "使用模板", image: "/bento-gallery/template.png", ratio: "490 / 417" },
-  { id: "pattern", href: "/pattern", title: "花型创作", image: "/bento-gallery/pattern.png", ratio: "492 / 413" },
-  { id: "video", href: "/video", title: "爆款视频", image: "/bento-gallery/video.png", ratio: "490 / 413" },
-  { id: "sketch", href: "/sketch", title: "画稿生图", image: "/bento-gallery/sketch.png", ratio: "492 / 413" },
-  { id: "local-edit", href: "/local-edit", title: "局部编辑", image: "/bento-gallery/local-edit.png", ratio: "492 / 413" },
-  { id: "buyer-show", href: "/buyer-show", title: "买家秀", image: "/bento-gallery/buyer-show.png", ratio: "492 / 413" },
-  { id: "upscale", href: "/upscale", title: "一键高清", image: "/bento-gallery/hd.png", ratio: "492 / 413" },
+  { id: "studio", href: "/studio", title: "AI 虚拟影棚", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/AI%E8%99%9A%E6%8B%9F%E5%BD%B1%E6%A3%9A.png", ratio: "490 / 413" },
+  { id: "replicate", href: "/replicate", title: "爆款复刻", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E7%88%86%E6%AC%BE%E5%A4%8D%E5%88%BB.png", ratio: "1367 / 1151" },
+  { id: "detail-page", href: "/detail-page", title: "详情页制作", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E8%AF%A6%E6%83%85%E9%A1%B5%E5%88%B6%E4%BD%9C.png", ratio: "498 / 405" },
+  { id: "template", href: "/template", title: "使用模板", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E4%BD%BF%E7%94%A8%E6%A8%A1%E6%9D%BF.png", ratio: "490 / 417" },
+  { id: "pattern", href: "/pattern", title: "花型创作", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E8%8A%B1%E5%9E%8B%E5%88%9B%E4%BD%9C.png", ratio: "492 / 413" },
+  { id: "video", href: "/video", title: "爆款视频", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E7%88%86%E6%AC%BE%E8%A7%86%E9%A2%91.png", ratio: "490 / 413" },
+  { id: "sketch", href: "/sketch", title: "画稿生图", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E7%94%BB%E7%A8%BF%E7%94%9F%E6%88%90.png", ratio: "492 / 413" },
+  { id: "local-edit", href: "/local-edit", title: "局部编辑", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E5%B1%80%E9%83%A8%E7%BC%96%E8%BE%91.png", ratio: "492 / 413" },
+  { id: "buyer-show", href: "/buyer-show", title: "买家秀", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E4%B9%B0%E5%AE%B6%E7%A7%80.png", ratio: "492 / 413" },
+  { id: "upscale", href: "/upscale", title: "一键高清", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E4%B8%80%E9%94%AE%E9%AB%98%E6%B8%85.png", ratio: "492 / 413" },
 ];
 
 function wrappedOffset(index: number, activeIndex: number, total: number) {
