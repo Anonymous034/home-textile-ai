@@ -15,7 +15,7 @@ async function render(pathname) {
 
 test("local edit renders upload and output settings without an oversized empty heading", async () => {
   const html = await render("/local-edit");
-  for (const text of ["局部编辑｜家纺AI视觉工作台", "局部编辑画布", "编辑图片", "上传或拖入图片", "生成范围", "只选区（默认）", "图片比例", "分辨率", "预计消耗积分", "系统会先生成严格的英文提示词 JSON"]) assert.ok(html.includes(text), text);
+  for (const text of ["局部编辑｜强视觉ai生图", "局部编辑画布", "编辑图片", "上传或拖入图片", "生成范围", "只选区（默认）", "图片比例", "分辨率", "预计消耗积分", "系统会先生成严格的英文提示词 JSON"]) assert.ok(html.includes(text), text);
   assert.match(html, /<option value="selected_only" selected="">只选区（默认）<\/option>/);
   assert.match(html, /<option selected="">3:4<\/option>/);
   assert.match(html, /<option selected="">1K<\/option>/);

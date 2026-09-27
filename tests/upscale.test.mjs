@@ -15,7 +15,7 @@ async function render(pathname) {
 
 test("upscale renders batch upload, mode controls and an honest initial state", async () => {
   const html = await render("/upscale");
-  for (const text of ["一键高清｜家纺AI视觉工作台", "高清图片画布", "上传或拖入图片", "处理方式", "清晰增强", "高清放大", "预计消耗积分", "转高清", "已连接 Seedream"]) assert.ok(html.includes(text), text);
+  for (const text of ["一键高清｜强视觉ai生图", "高清图片画布", "上传或拖入图片", "处理方式", "清晰增强", "高清放大", "预计消耗积分", "转高清", "已连接 Seedream"]) assert.ok(html.includes(text), text);
   assert.match(html, /type="file" multiple=""/);
   assert.match(html, /name="enhance-mode" checked="" value="清晰增强"/);
   assert.match(html, /class="template-generate"[^>]*disabled=""/);

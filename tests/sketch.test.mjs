@@ -11,7 +11,7 @@ async function render(pathname) {
 
 test("sketch page renders A/B inputs and reference controls without a large canvas heading", async () => {
   const html = await render("/sketch");
-  for (const label of ["画稿生图｜家纺AI视觉工作台", "画稿生图画布", "上传或拖入 A 版", "上传或拖入 B 版", "选择纯色", "上传或拖入参考图", "品类", "面料", "工艺", "图片比例", "分辨率", "由 Agent Plan 图片服务生成"]) assert.ok(html.includes(label), `Missing ${label}`);
+  for (const label of ["画稿生图｜强视觉ai生图", "画稿生图画布", "上传或拖入 A 版", "上传或拖入 B 版", "选择纯色", "上传或拖入参考图", "品类", "面料", "工艺", "图片比例", "分辨率", "由 Agent Plan 图片服务生成"]) assert.ok(html.includes(label), `Missing ${label}`);
   assert.match(html, /<option selected="">3:4<\/option>/);
   assert.match(html, /<option selected="">1K<\/option>/);
   assert.match(html, /class="template-generate"[^>]*disabled=""/);
