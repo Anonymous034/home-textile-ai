@@ -44,6 +44,8 @@ yarn-error.log*
 
 # Local AI studio backend runtime data
 /backend/.venv/
+/__pycache__/
+**/__pycache__/
 /backend/data/*
 !/backend/data/compositions/
 !/backend/data/model-ai-restored/
