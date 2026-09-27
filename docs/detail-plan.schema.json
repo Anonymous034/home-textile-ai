@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Detail Page PlanDocument v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "planId",
+    "revision",
+    "source",
+    "input",
+    "items"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,80}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source": {
+      "enum": [
+        "ai",
+        "template"
+      ]
+    },
+    "input": {
+      "$ref": "#/$defs/InputParams"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "$ref": "#/$defs/PlanItem"
+      }
+    }
+  },
+  "$defs": {
+    "InputParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "productName",
+        "fabric",
+        "craftsmanship",
+        "specifications",
+        "sellingPoints",
+        "notes",
+        "language",
+        "imageCount",
+        "aspectRatio",
+        "resolution"
+      ],
+      "properties": {
+        "productName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "fabric": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "craftsmanship": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "specifications": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "sellingPoints": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "language": {
+          "enum": [
+            "zh-CN",
+            "en",
+            "es",
+            "fr",
+            "de",
+            "ja",
+            "ko"
+          ]
+        },
+        "imageCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "aspectRatio": {
+          "enum": [
+            "3:4",
+            "9:16",
+            "4:3",
+            "16:9",
+            "1:1"
+          ]
+        },
+        "resolution": {
+          "enum": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        }
+      }
+    },
+    "PlanItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "order",
+        "theme",
+        "visualDescription",
+        "stylePrompt",
+        "textOverlay",
+        "sourceImageIds"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,80}$"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "theme": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "visualDescription": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "stylePrompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "textOverlay": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "headline",
+            "body",
+            "placement"
+          ],
+          "properties": {
+            "headline": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "body": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "placement": {
+              "enum": [
+                "top",
+                "center",
+                "bottom",
+                "left",
+                "right"
+              ]
+            }
+          }
+        },
+        "sourceImageIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,80}$"
+          }
+        }
+      }
+    }
+  }
+}

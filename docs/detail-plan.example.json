@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "planId": "plan_example_001",
+  "revision": 1,
+  "source": "ai",
+  "input": {
+    "productName": "全棉色织四件套",
+    "fabric": "100% 棉",
+    "craftsmanship": "色织、水洗工艺",
+    "specifications": "床单 245 × 250 cm；被套 200 × 230 cm；枕套 48 × 74 cm × 2",
+    "sellingPoints": "柔和配色，适合日常卧室搭配",
+    "notes": "保持产品实际花型，不出现人物",
+    "language": "zh-CN",
+    "imageCount": 5,
+    "aspectRatio": "3:4",
+    "resolution": "2K"
+  },
+  "items": [
+    {
+      "id": "card_01",
+      "order": 1,
+      "theme": "品牌首屏海报",
+      "visualDescription": "以主图中床品为主体，中景展示完整铺床效果，上方保留约 20% 留白。保持色织花型与实际配色一致。",
+      "stylePrompt": "自然侧光，统一中性色背景，真实商业摄影",
+      "textOverlay": {
+        "headline": "全棉色织四件套",
+        "body": "让柔和配色融入日常卧室",
+        "placement": "top"
+      },
+      "sourceImageIds": [
+        "image_main"
+      ]
+    },
+    {
+      "id": "card_02",
+      "order": 2,
+      "theme": "核心卖点",
+      "visualDescription": "突出床品与卧室的搭配关系，下方安排两段简短文案。不添加未经提供的功能卖点。",
+      "stylePrompt": "延续首屏光线和色温，简洁构图",
+      "textOverlay": {
+        "headline": "柔和配色，自然相衬",
+        "body": "适合日常卧室搭配",
+        "placement": "bottom"
+      },
+      "sourceImageIds": [
+        "image_main",
+        "image_scene"
+      ]
+    },
+    {
+      "id": "card_03",
+      "order": 3,
+      "theme": "面料与工艺",
+      "visualDescription": "根据细节图呈现真实织物纹理和色织细节，使用近景与侧光，不夸大纤维品质。",
+      "stylePrompt": "微距细节摄影，低对比度，清晰纹理",
+      "textOverlay": {
+        "headline": "100% 棉 · 色织工艺",
+        "body": "水洗工艺",
+        "placement": "left"
+      },
+      "sourceImageIds": [
+        "image_detail"
+      ]
+    },
+    {
+      "id": "card_04",
+      "order": 4,
+      "theme": "尺寸规格",
+      "visualDescription": "产品平铺，按实际尺寸以独立标线布局展示床单、被套和枕套，为文字预留右侧留白。",
+      "stylePrompt": "正视图，干净背景，统一图形线条",
+      "textOverlay": {
+        "headline": "四件套规格",
+        "body": "床单 245 × 250 cm\\n被套 200 × 230 cm\\n枕套 48 × 74 cm × 2",
+        "placement": "right"
+      },
+      "sourceImageIds": [
+        "image_main"
+      ]
+    },
+    {
+      "id": "card_05",
+      "order": 5,
+      "theme": "使用场景收尾",
+      "visualDescription": "以场景图为布局参考，展示床品在日常卧室的完整使用效果，无人物、不虚构附赠物品。",
+      "stylePrompt": "延续整套色调与自然柔光，安静舒适",
+      "textOverlay": {
+        "headline": "为卧室换上日常的舒适",
+        "body": "全棉色织四件套",
+        "placement": "bottom"
+      },
+      "sourceImageIds": [
+        "image_scene",
+        "image_main"
+      ]
+    }
+  ]
+}
