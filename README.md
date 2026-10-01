@@ -17,7 +17,7 @@ Copy-Item backend/.env.example backend/.env
 
 ## 服务器部署准备
 
-前端默认使用同源 `/api`，不再把浏览器请求发往访问者电脑的 `127.0.0.1:8000`。首页直接显示功能页；未登录时点功能卡片才弹出登录框。登录框始终提示演示账号 `123 / 123456`，但后端默认仅允许本机使用；隔离演示服务器如需开放，须显式设置 `DEMO_LOGIN_PUBLIC_ENABLED=1`，不可用于真实用户数据。部署时由反向代理把 `/api/`（以及 WebSocket `/ws/`）转发给运行在服务器上的 FastAPI；本地开发可在未提交的 `.env.local` 中设置 `NEXT_PUBLIC_STUDIO_API=http://localhost:8000`。详情页和买家秀默认使用同一地址，只有独立部署该服务时才需要设置 `NEXT_PUBLIC_DETAIL_API_URL`。完整的代理配置、安全设置及尚未接入的生产短信服务见 [服务器部署说明](docs/server-deployment.md)。
+前端默认使用同源 `/api`，不再把浏览器请求发往访问者电脑的 `127.0.0.1:8000`。登录相关请求在本地由前端同源转发给 FastAPI；如后端不在 `127.0.0.1:8000`，可在未提交的 `.env.local` 中设置服务端变量 `STUDIO_API_INTERNAL_URL`。首页直接显示功能页；未登录时点功能卡片才弹出登录框。登录框始终提示演示账号 `123 / 123456`，但后端默认仅允许本机使用；隔离演示服务器如需开放，须显式设置 `DEMO_LOGIN_PUBLIC_ENABLED=1`，不可用于真实用户数据。部署时由反向代理把 `/api/`（以及 WebSocket `/ws/`）转发给运行在服务器上的 FastAPI；本地开发仍可在未提交的 `.env.local` 中设置 `NEXT_PUBLIC_STUDIO_API=http://localhost:8000` 供其他功能调用。详情页和买家秀默认使用同一地址，只有独立部署该服务时才需要设置 `NEXT_PUBLIC_DETAIL_API_URL`。完整的代理配置、安全设置及尚未接入的生产短信服务见 [服务器部署说明](docs/server-deployment.md)。
 
 ## 目录
 

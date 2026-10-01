@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import "./settings.css";
 
-const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
+const API = "";
 const STORAGE_KEY = "studio-personal-ark-key";
 
 type AuthUser = { phone?: string; display_name?: string };

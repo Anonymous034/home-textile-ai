@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import "./DemoLoginForm.css";
 
-const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
+const API = "";
 const HOME_PATH = "/";
 const DEMO_LOGIN_HINT = "演示登录：手机号填 123，验证码填 123456；无需获取验证码或填写人机验证。";
 

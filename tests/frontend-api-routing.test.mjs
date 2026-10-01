@@ -17,6 +17,7 @@ async function sources(directory) {
 test("frontend source does not hard-code a visitor-local API server", async () => {
   const app = fileURLToPath(new URL("../app/", import.meta.url));
   for (const path of await sources(app)) {
+    if (path.startsWith(join(app, "api") + "\\") || path.startsWith(join(app, "api") + "/")) continue;
     const source = await readFile(path, "utf8");
     assert.doesNotMatch(source, /(?:127\.0\.0\.1|localhost):8000|ws:\/\/localhost/, `${path} still points to a visitor-local backend`);
   }

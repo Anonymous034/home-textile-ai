@@ -18,3 +18,21 @@ test("login form always offers the 123 demo path and visible hint", async () => 
   assert.match(form, /demo-login__message.*DEMO_LOGIN_HINT/);
   assert.doesNotMatch(form, /NEXT_PUBLIC_DEMO_LOGIN_ENABLED/);
 });
+
+test("authentication calls use the frontend origin and local proxy protects public demo login", async () => {
+  const sources = [
+    "DemoLoginForm.tsx",
+    "AuthenticatedWorkbench.tsx",
+    "WorkbenchDashboard.tsx",
+    "UserMenu.tsx",
+  ];
+  for (const source of sources) {
+    const text = await readFile(new URL(`../app/ui/${source}`, import.meta.url), "utf8");
+    assert.match(text, /\/api\/auth\//);
+    assert.doesNotMatch(text, /NEXT_PUBLIC_STUDIO_API/);
+  }
+  const proxy = await readFile(new URL("../app/api/auth/[...path]/route.ts", import.meta.url), "utf8");
+  assert.match(proxy, /STUDIO_API_INTERNAL_URL/);
+  assert.match(proxy, /DEMO_LOGIN_PUBLIC_ENABLED/);
+  assert.match(proxy, /incoming\.pathname === "\/api\/auth\/demo-login"/);
+});
