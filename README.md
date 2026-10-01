@@ -13,7 +13,7 @@ backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt
 Copy-Item backend/.env.example backend/.env
 ```
 
-按需在本机 `backend/.env` 填写站点提供的 API Key、图片模型配置及视觉策划接口配置。这个文件已被 Git 忽略，不要提交密钥。默认 `DEMO_SMS_MODE=mock` 只用于联调，使用 `DEMO_SMS_CODE` 完成验证码流程；要向真实手机发短信，需要接入短信供应商并提供签名、模板和服务密钥。随后双击 `启动本地网站.cmd`，或执行 `./start-ai-studio.ps1`；前端为 `http://127.0.0.1:3000`，后端接口文档为 `http://127.0.0.1:8000/docs`。登录后可在 `/settings` 验证个人 API Key；它只用于当前浏览器会话，不会覆盖站点配置。
+按需在本机 `backend/.env` 填写站点提供的 API Key、图片模型配置及视觉策划接口配置。这个文件已被 Git 忽略，不要提交密钥。示例配置的 `DEMO_LOGIN_ENABLED=1` 仅供本机演示：进入功能页后，点击功能卡片，使用手机号 `123` 和验证码 `123456` 登录，无需获取短信验证码；生产环境必须设为 `0`。普通手机号的 `DEMO_SMS_MODE=mock` 只用于联调，使用 `DEMO_SMS_CODE` 完成验证码流程；要向真实手机发短信，需要接入短信供应商并提供签名、模板和服务密钥。随后双击 `启动本地网站.cmd`，或执行 `./start-ai-studio.ps1`；前端为 `http://127.0.0.1:3000`，后端接口文档为 `http://127.0.0.1:8000/docs`。登录后可在 `/settings` 验证个人 API Key；它只用于当前浏览器会话，不会覆盖站点配置。
 
 ## 目录
 

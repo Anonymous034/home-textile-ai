@@ -166,6 +166,40 @@ class VerifyCodeBody(PhoneBody):
     code: str = Field(min_length=4, max_length=8)
 
 
+@router.post("/demo-login")
+def demo_login(body: VerifyCodeBody, request: Request, response: Response) -> dict[str, Any]:
+    """Allow the local demo account to use the normal session cookie."""
+    if os.getenv("DEMO_LOGIN_ENABLED", "0").strip() != "1" or _client_ip(request) not in {"127.0.0.1", "::1"}:
+        raise HTTPException(404, "演示登录未启用")
+    if body.phone.strip() != "123":
+        raise HTTPException(400, "演示手机号不正确，请填写 123")
+    if not hmac.compare_digest(body.code.strip(), "123456"):
+        raise HTTPException(400, "演示验证码不正确，请填写 123456")
+
+    now_iso = utc_now()
+    account_id = "demo-user-123"
+    with connect() as db:
+        user = db.execute("SELECT id,status FROM users WHERE account_id=?", (account_id,)).fetchone()
+        if user:
+            if user["status"] != "active":
+                raise HTTPException(403, "该账号已被停用")
+            user_id = str(user["id"])
+            db.execute("UPDATE users SET last_seen_at=? WHERE account_id=?", (now_iso, account_id))
+        else:
+            user_id = f"usr_{uuid4().hex}"
+            db.execute(
+                "INSERT INTO users(id,account_id,role,status,created_at,last_seen_at,display_name) VALUES(?,?,?,?,?,?,?)",
+                (user_id, account_id, "user", "active", now_iso, now_iso, "演示用户"),
+            )
+        raw_token = secrets.token_urlsafe(48)
+        db.execute(
+            "INSERT INTO auth_sessions(id,account_id,token_hash,created_at,expires_at,last_seen_at,user_agent,ip_address) VALUES(?,?,?,?,?,?,?,?)",
+            (f"ses_{uuid4().hex}", account_id, _hash(raw_token), now_iso, _utc_after(SESSION_TTL_DAYS * 24 * 60 * 60), now_iso, request.headers.get("user-agent"), _client_ip(request)),
+        )
+    _set_session_cookie(response, raw_token)
+    return {"ok": True, "user": {"id": user_id, "account_id": account_id, "display_name": "演示用户", "role": "user"}}
+
+
 def _validate_optional_challenge(body: RequestCodeBody) -> None:
     answers = {"subtract-17-1": "16", "add-8-4": "12", "subtract-9-3": "6"}
     if body.human_answer is None and body.challenge_id is None:

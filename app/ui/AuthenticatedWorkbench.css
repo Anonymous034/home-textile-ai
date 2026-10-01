@@ -1,0 +1,58 @@
+.authenticated-workbench {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+}
+
+.authenticated-workbench__surface[aria-hidden="true"] {
+  pointer-events: none;
+  user-select: none;
+}
+
+.auth-gate {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  padding: 24px;
+}
+
+.auth-gate__scrim {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 46%, rgb(64 49 112 / 0.42), transparent 34%),
+    rgb(2 3 6 / 0.76);
+  -webkit-backdrop-filter: blur(16px) saturate(78%);
+  backdrop-filter: blur(16px) saturate(78%);
+}
+
+.auth-gate__aurora { z-index: 0; }
+
+.auth-gate__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(680px, 100%);
+}
+
+.auth-gate .demo-login {
+  width: 100%;
+  max-height: calc(100svh - 48px);
+  overflow-y: auto;
+}
+
+.auth-gate .demo-login__heading { margin-top: 8px; }
+
+@media (max-width: 620px) {
+  .auth-gate {
+    place-items: start center;
+    padding: 14px;
+  }
+
+  .auth-gate .demo-login {
+    max-height: none;
+    animation: none;
+  }
+}

@@ -9,6 +9,7 @@ type UserMenuProps = {
   user: ChatGPTUser | null;
   avatarUrl?: string | null;
   logoutHref?: string;
+  onLoginRequest?: () => void;
 };
 
 const menuItems = [
@@ -21,7 +22,7 @@ const menuItems = [
   { icon: "♕", label: "会员优惠", accent: true },
 ];
 
-export default function UserMenu({ user, avatarUrl, logoutHref = "/signout-with-chatgpt?return_to=%2F" }: UserMenuProps) {
+export default function UserMenu({ user, avatarUrl, logoutHref = "/signout-with-chatgpt?return_to=%2F", onLoginRequest }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const [watermark, setWatermark] = useState(true);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -100,7 +101,12 @@ export default function UserMenu({ user, avatarUrl, logoutHref = "/signout-with-
               </a>
             </>
           ) : (
-            <a className="user-menu__login" href="/login">登录 / 注册</a>
+            <a className="user-menu__login" href="/login" onClick={(event) => {
+              if (!onLoginRequest) return;
+              event.preventDefault();
+              setOpen(false);
+              onLoginRequest();
+            }}>登录 / 注册</a>
           )}
         </div>
       )}

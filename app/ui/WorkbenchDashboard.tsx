@@ -6,13 +6,6 @@ import UserMenu from "./UserMenu";
 import "./UserMenu.css";
 import "./WorkbenchDashboard.css";
 
-const demoUser = {
-  userId: "demo-user-123",
-  displayName: "演示用户",
-  email: "123",
-  fullName: "演示用户",
-};
-
 const galleryItems = [
   { id: "studio", href: "/studio", title: "AI 虚拟影棚", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/AI%E8%99%9A%E6%8B%9F%E5%BD%B1%E6%A3%9A.png", ratio: "490 / 413" },
   { id: "replicate", href: "/replicate", title: "爆款复刻", image: "https://dtl-1252530263.cos.ap-guangzhou.myqcloud.com/public/images/%E7%88%86%E6%AC%BE%E5%A4%8D%E5%88%BB.png", ratio: "1367 / 1151" },
@@ -32,7 +25,12 @@ function wrappedOffset(index: number, activeIndex: number, total: number) {
   return offset;
 }
 
-export default function WorkbenchDashboard() {
+type WorkbenchDashboardProps = {
+  onFeatureSelect: (href: string) => void;
+  onLoginRequest: () => void;
+};
+
+export default function WorkbenchDashboard({ onFeatureSelect, onLoginRequest }: WorkbenchDashboardProps) {
   const rootRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLElement>(null);
   const deckRef = useRef<HTMLDivElement>(null);
@@ -41,15 +39,15 @@ export default function WorkbenchDashboard() {
   const pointerStartRef = useRef<number | null>(null);
   const draggedRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [menuUser, setMenuUser] = useState(demoUser);
+  const [menuUser, setMenuUser] = useState<{
+    userId: string;
+    displayName: string;
+    email: string;
+    fullName: string;
+  } | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (sessionStorage.getItem("studio-personal-ark-key")) {
-      window.queueMicrotask(() => {
-        setMenuUser({ userId: "personal-key", displayName: "个人密钥用户", email: "个人密钥", fullName: "个人密钥用户" });
-      });
-    }
     const api = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
     fetch(`${api}/api/auth/me`, { credentials: "include", cache: "no-store" })
       .then((response) => response.ok ? response.json() : null)
@@ -208,7 +206,7 @@ export default function WorkbenchDashboard() {
         <div className="workbench__topbar-center" aria-live="polite">
           {galleryItems[activeIndex].title}
         </div>
-        <UserMenu user={menuUser} logoutHref="/" />
+        <UserMenu user={menuUser} logoutHref="/" onLoginRequest={onLoginRequest} />
       </header>
 
       <section
@@ -241,12 +239,7 @@ export default function WorkbenchDashboard() {
             draggedRef.current = false;
           }}
           onPointerUp={(event) => {
-            const featureLink = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[data-feature-link="true"]');
-            const wasDragged = finishDrag(event.clientX);
-            if (featureLink && !wasDragged && (isExpanded || Number(featureLink.dataset.index) === activeIndex)) {
-              event.preventDefault();
-              window.location.assign(featureLink.href);
-            }
+            finishDrag(event.clientX);
           }}
           onPointerCancel={() => { pointerStartRef.current = null; }}
         >
@@ -264,19 +257,16 @@ export default function WorkbenchDashboard() {
                   data-feature-link="true"
                   data-index={index}
                   onClick={(event) => {
+                    event.preventDefault();
                     if (draggedRef.current) {
                       draggedRef.current = false;
-                      event.preventDefault();
                       return;
                     }
-                    if (!isExpanded && index !== activeIndex) {
-                      event.preventDefault();
-                      selectSlideRef.current(index);
-                    }
+                    onFeatureSelect(featureHref);
                   }}
                   aria-label={index === activeIndex ? `进入${item.title}` : `查看${item.title}`}
                   aria-current={index === activeIndex ? "true" : undefined}
-                  tabIndex={index === activeIndex ? 0 : -1}
+                  tabIndex={isExpanded || index === activeIndex ? 0 : -1}
                   key={item.title}
                 >
                   {cardImage}

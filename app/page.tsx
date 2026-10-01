@@ -1,5 +1,5 @@
-import HeroStage from "./ui/HeroStage";
+import AuthenticatedWorkbench from "./ui/AuthenticatedWorkbench";
 
 export default function HomePage() {
-  return <HeroStage />;
+  return <AuthenticatedWorkbench />;
 }

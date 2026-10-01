@@ -1,5 +1,5 @@
-import WorkbenchDashboard from "../ui/WorkbenchDashboard";
+import AuthenticatedWorkbench from "../ui/AuthenticatedWorkbench";
 
 export default function DashboardPage() {
-  return <WorkbenchDashboard />;
+  return <AuthenticatedWorkbench />;
 }

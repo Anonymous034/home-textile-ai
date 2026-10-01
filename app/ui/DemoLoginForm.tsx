@@ -13,7 +13,12 @@ const challenges = [
   { id: "subtract-9-3", label: "9 - 3 = ?" },
 ];
 
-export default function DemoLoginForm() {
+type DemoLoginFormProps = {
+  onSuccess?: () => void;
+  showBackLink?: boolean;
+};
+
+export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLoginFormProps) {
   const cardRef = useRef<HTMLElement>(null);
   const [phone, setPhone] = useState("");
   const [humanAnswer, setHumanAnswer] = useState("");
@@ -96,6 +101,10 @@ export default function DemoLoginForm() {
       setMessage("请先输入手机号码");
       return;
     }
+    if (phone.trim() === "123") {
+      setMessage("演示登录：手机号 123，验证码 123456；无需获取验证码或填写人机验证。");
+      return;
+    }
     setRequestingCode(true);
     setMessage("正在发送验证码…");
     try {
@@ -130,14 +139,12 @@ export default function DemoLoginForm() {
     setMessage("正在验证填写的信息…");
 
     try {
-      const response = await fetch(`${API}/api/auth/verify-code`, {
+      const demo = phone.trim() === "123";
+      const response = await fetch(`${API}/api/auth/${demo ? "demo-login" : "verify-code"}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone,
-          code: verificationCode,
-        }),
+        body: JSON.stringify({ phone, code: verificationCode }),
       });
       const result = (await response.json()) as { ok: boolean; message?: string; detail?: string };
 
@@ -146,7 +153,11 @@ export default function DemoLoginForm() {
         return;
       }
 
-      window.location.assign("/dashboard");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.assign("/dashboard");
+      }
     } catch {
       setMessage("暂时无法连接验证服务，请稍后再试");
     } finally {
@@ -157,7 +168,7 @@ export default function DemoLoginForm() {
   return (
     <section className="demo-login" ref={cardRef} aria-labelledby="demo-login-title">
       <span className="demo-login__spotlight" aria-hidden="true" />
-      <a className="demo-login__back" href={HOME_PATH}>← 返回首页</a>
+      {showBackLink && <a className="demo-login__back" href={HOME_PATH}>← 返回首页</a>}
       <div className="demo-login__heading">
         <p>家纺AI视觉</p>
         <h1 id="demo-login-title">登录 / 注册</h1>
@@ -174,7 +185,7 @@ export default function DemoLoginForm() {
           <span>手机号码</span>
           <input
             value={phone}
-            onChange={(event) => setPhone(event.target.value)}
+            onChange={(event) => { setPhone(event.target.value); setMessage(""); }}
             inputMode="numeric"
             autoComplete="tel"
             placeholder="例如 +86 138 0000 0000"
@@ -203,7 +214,7 @@ export default function DemoLoginForm() {
           <div className="demo-login__code-row">
             <input
               value={verificationCode}
-              onChange={(event) => setVerificationCode(event.target.value)}
+              onChange={(event) => { setVerificationCode(event.target.value); setMessage(""); }}
               inputMode="numeric"
               autoComplete="one-time-code"
               placeholder="6位验证码"
@@ -224,7 +235,7 @@ export default function DemoLoginForm() {
           />
         </label>
 
-        <p className="demo-login__message" aria-live="polite">{message || "验证码有效期 5 分钟；开发环境请使用服务器配置的 DEMO_SMS_CODE。"}</p>
+        <p className="demo-login__message" aria-live="polite">{message || (phone.trim() === "" || phone.trim() === "123" ? "演示登录：手机号填 123，验证码填 123456；无需获取验证码或填写人机验证。" : "验证码有效期 5 分钟；开发环境请使用服务器配置的 DEMO_SMS_CODE。")}</p>
         <button className="demo-login__submit" type="submit" disabled={submitting}>
           {submitting ? "正在验证…" : mode === "register" ? "验证并注册" : "验证码登录"}
         </button>
