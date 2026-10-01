@@ -5,8 +5,8 @@ import { gsap } from "gsap";
 import "./DemoLoginForm.css";
 
 const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
-const DEMO_LOGIN_ENABLED = process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED === "1";
 const HOME_PATH = "/";
+const DEMO_LOGIN_HINT = "演示登录：手机号填 123，验证码填 123456；无需获取验证码或填写人机验证。";
 
 const challenges = [
   { id: "subtract-17-1", label: "17 - 1 = ?" },
@@ -102,8 +102,8 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
       setMessage("请先输入手机号码");
       return;
     }
-    if (DEMO_LOGIN_ENABLED && phone.trim() === "123") {
-      setMessage("演示登录：手机号 123，验证码 123456；无需获取验证码或填写人机验证。");
+    if (phone.trim() === "123") {
+      setMessage(DEMO_LOGIN_HINT);
       return;
     }
     setRequestingCode(true);
@@ -140,7 +140,7 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
     setMessage("正在验证填写的信息…");
 
     try {
-      const demo = DEMO_LOGIN_ENABLED && phone.trim() === "123";
+      const demo = phone.trim() === "123";
       const response = await fetch(`${API}/api/auth/${demo ? "demo-login" : "verify-code"}`, {
         method: "POST",
         credentials: "include",
@@ -236,7 +236,7 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
           />
         </label>
 
-        <p className="demo-login__message" aria-live="polite">{message || (DEMO_LOGIN_ENABLED && (phone.trim() === "" || phone.trim() === "123") ? "演示登录：手机号填 123，验证码填 123456；无需获取验证码或填写人机验证。" : "验证码有效期 5 分钟。")}</p>
+        <p className="demo-login__message" aria-live="polite">{message || (phone.trim() === "" || phone.trim() === "123" ? DEMO_LOGIN_HINT : "验证码有效期 5 分钟。")}</p>
         <button className="demo-login__submit" type="submit" disabled={submitting}>
           {submitting ? "正在验证…" : mode === "register" ? "验证并注册" : "验证码登录"}
         </button>

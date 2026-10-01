@@ -120,8 +120,6 @@ try {
     if ($null -ne (Get-RecordedProcess $frontendPidFile)) { Stop-RecordedProcess $frontendPidFile; Start-Sleep -Milliseconds 500 }
     if (Test-Port 3000) { throw "Port 3000 is occupied by another program." }
     Write-Host "Building frontend..." -ForegroundColor Cyan
-    # This launcher is only for local development; keep the demo hint off in normal server builds.
-    if (-not $env:NEXT_PUBLIC_DEMO_LOGIN_ENABLED) { $env:NEXT_PUBLIC_DEMO_LOGIN_ENABLED = "1" }
     & $pnpm build
     if ($LASTEXITCODE -ne 0) { throw "Frontend build failed." }
     Set-Content -LiteralPath $frontendOut -Value "" -Encoding utf8

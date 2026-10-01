@@ -20,7 +20,7 @@ backend/.venv/bin/python -m pip install -r backend/requirements.txt
 backend/.venv/bin/python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
 ```
 
-在服务器的 `backend/.env` 中至少设置 `FRONTEND_ORIGIN=https://你的域名`、`AUTH_COOKIE_SECURE=1`、`DEMO_LOGIN_ENABLED=0`、`LOCAL_CONFIG_ENABLED=0`，并使用随机的 `AUTH_OTP_PEPPER`。所需 AI 密钥只能配置在后端，不能写入 `NEXT_PUBLIC_*` 变量或仓库。数据库、上传文件和生成结果需要持久化存储及备份；不要随发布覆盖运行中的数据库。
+在服务器的 `backend/.env` 中至少设置 `FRONTEND_ORIGIN=https://你的域名`、`AUTH_COOKIE_SECURE=1`、`DEMO_LOGIN_ENABLED=0`、`DEMO_LOGIN_PUBLIC_ENABLED=0`、`LOCAL_CONFIG_ENABLED=0`，并使用随机的 `AUTH_OTP_PEPPER`。所需 AI 密钥只能配置在后端，不能写入 `NEXT_PUBLIC_*` 变量或仓库。数据库、上传文件和生成结果需要持久化存储及备份；不要随发布覆盖运行中的数据库。
 
 ## 同源反向代理
 
@@ -55,4 +55,4 @@ location / {
 
 ## 上线前必须完成
 
-当前仓库的 `DEMO_SMS_MODE=provider` 仅提供适配器接口，尚未接入实际短信供应商；设为 `provider` 而不实现适配器会返回 503。`123 / 123456` 演示登录和网页内配置密钥仅供本机使用，公开服务器必须关闭。完成真实短信接入、后端访问控制审查、AI 服务密钥配置、数据持久化和 HTTPS 后再面向公众开放；本次前端改动本身并不等于完整网站已经上线。
+当前仓库的 `DEMO_SMS_MODE=provider` 仅提供适配器接口，尚未接入实际短信供应商；设为 `provider` 而不实现适配器会返回 503。登录框会显示 `123 / 123456` 演示提示，但后端默认拒绝公网演示登录。只有隔离、无真实用户数据的演示服务器才能同时设置 `DEMO_LOGIN_ENABLED=1` 和 `DEMO_LOGIN_PUBLIC_ENABLED=1`；这会开放一个所有访客共用的账号，不能作为正式身份验证。网页内配置密钥入口在公开服务器必须关闭。完成真实短信接入、后端访问控制审查、AI 服务密钥配置、数据持久化和 HTTPS 后再面向公众开放；本次前端改动本身并不等于完整网站已经上线。
