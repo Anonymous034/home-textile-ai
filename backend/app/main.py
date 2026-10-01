@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from PIL import Image, ImageFilter, UnidentifiedImageError
 from pydantic import BaseModel, Field
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 
 from .database import RESULT_DIR, UPLOAD_DIR, connect, expires_at, initialize, row_to_dict, utc_now
 from .providers import MockProvider
@@ -414,24 +414,21 @@ async def ai_connection_stream() -> StreamingResponse:
 def configure_local_ark_key(body: LocalArkKeyCreate, request: Request) -> dict[str, object]:
     """仅供本机开发使用；密钥不会返回给网页，也不会写入数据库。"""
     client_host = request.client.host if request.client else ""
-    if client_host not in {"127.0.0.1", "::1", "localhost"}:
+    if (os.getenv("LOCAL_CONFIG_ENABLED", "0").strip() != "1"
+            or client_host not in {"127.0.0.1", "::1", "localhost"}
+            or request.url.hostname not in {"localhost", "127.0.0.1", "::1"}):
         raise HTTPException(403, "这个配置入口只能在本机使用")
     api_key = body.api_key.strip()
     if not valid_ark_key(api_key):
         raise HTTPException(400, "密钥格式不正确，请粘贴方舟 API Key 管理页面复制的完整原始值")
     env_path = BACKEND_DIR / ".env"
-    env_path.write_text(
-        "\n".join(
-            [
-                f"ARK_API_KEY={api_key}",
-                "ARK_IMAGE_MODEL=doubao-seedream-5.0-lite",
-                "ARK_IMAGE_ENDPOINT=https://ark.cn-beijing.volces.com/api/plan/v3/images/generations",
-                "FRONTEND_ORIGIN=http://localhost:3000",
-                "",
-            ]
-        ),
-        encoding="utf-8",
-    )
+    # Keep the other local settings intact, including the development-only gate.
+    for name, value in (
+        ("ARK_API_KEY", api_key),
+        ("ARK_IMAGE_MODEL", "doubao-seedream-5.0-lite"),
+        ("ARK_IMAGE_ENDPOINT", "https://ark.cn-beijing.volces.com/api/plan/v3/images/generations"),
+    ):
+        set_key(env_path, name, value)
     os.environ["ARK_API_KEY"] = api_key
     global provider
     provider = AgentPlanSeedreamSkillProvider()

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type DragEvent } from "react";
 import "./TemplateLab.css";
 import "./UpscaleLab.css";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 type SourceImage = { id: string; url: string; name: string; fingerprint: string; file: File };
 type EnhanceResult = { url?: string; status: "waiting" | "processing" | "completed" | "failed"; error?: string; outputSize?: number[] };
 const MAX_IMAGES = 12;

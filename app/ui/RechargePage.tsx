@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./RechargePage.css";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 const STORAGE_KEY = "studio-payment-order";
 
 type PackageId = "starter" | "popular" | "pro" | "custom";

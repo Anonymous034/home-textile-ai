@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import "./setup-key.css";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://localhost:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 
 export default function SetupKeyPage() {
   const [key, setKey] = useState("");

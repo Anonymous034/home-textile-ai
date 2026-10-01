@@ -169,7 +169,9 @@ class VerifyCodeBody(PhoneBody):
 @router.post("/demo-login")
 def demo_login(body: VerifyCodeBody, request: Request, response: Response) -> dict[str, Any]:
     """Allow the local demo account to use the normal session cookie."""
-    if os.getenv("DEMO_LOGIN_ENABLED", "0").strip() != "1" or _client_ip(request) not in {"127.0.0.1", "::1"}:
+    if (os.getenv("DEMO_LOGIN_ENABLED", "0").strip() != "1"
+            or _client_ip(request) not in {"127.0.0.1", "::1"}
+            or request.url.hostname not in {"localhost", "127.0.0.1", "::1"}):
         raise HTTPException(404, "演示登录未启用")
     if body.phone.strip() != "123":
         raise HTTPException(400, "演示手机号不正确，请填写 123")

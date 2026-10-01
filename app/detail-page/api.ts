@@ -1,6 +1,6 @@
 import type { GenerateTask, InputParams, PlanDocument, PlanItem, ProductImage, RenderRequest } from "./models";
 
-const BASE = (process.env.NEXT_PUBLIC_DETAIL_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const BASE = (process.env.NEXT_PUBLIC_DETAIL_API_URL ?? process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 export class DetailApiError extends Error {
   constructor(message: string, public uncertain = false) { super(message); }
 }
@@ -57,6 +57,9 @@ export const detailApi = {
 /** Provider URLs must be same-service file endpoints, not arbitrary external URLs. */
 export function resultUrl(path?: string): string | undefined {
   if (!path || !path.startsWith("/api/detail/") || path.includes("\\")) return undefined;
-  const url = new URL(path, BASE);
-  return url.origin === new URL(BASE).origin && url.pathname.startsWith("/api/detail/") ? url.href : undefined;
+  const origin = BASE || "https://same-origin.invalid";
+  const url = new URL(path, origin);
+  return url.origin === new URL(origin).origin && url.pathname.startsWith("/api/detail/")
+    ? BASE ? url.href : `${url.pathname}${url.search}${url.hash}`
+    : undefined;
 }

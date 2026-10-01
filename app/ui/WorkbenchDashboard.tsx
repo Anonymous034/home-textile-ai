@@ -48,7 +48,7 @@ export default function WorkbenchDashboard({ onFeatureSelect, onLoginRequest }: 
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    const api = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+    const api = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
     fetch(`${api}/api/auth/me`, { credentials: "include", cache: "no-store" })
       .then((response) => response.ok ? response.json() : null)
       .then((data: { authenticated?: boolean; user?: { id?: string; phone?: string; display_name?: string } } | null) => {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 
 type Status = "checking" | "connected" | "stable" | "failed";
 
@@ -28,7 +28,7 @@ export default function KeyConnectionMonitor() {
         setStatus(body.stable ? "stable" : "connected");
         setMessage(body.stable ? "个人 API Key 连续 3 次探测通过" : "个人 API Key 已连通，持续检测中");
       } catch {
-        if (active) { setStatus("failed"); setMessage("本地服务暂不可连接"); }
+        if (active) { setStatus("failed"); setMessage("服务暂不可连接"); }
       }
     };
     void check();

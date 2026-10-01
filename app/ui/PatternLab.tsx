@@ -11,7 +11,7 @@ type ResultImage = { url: string; label: string; parentUrl: string | null };
 type FlowPath = { url: string; d: string };
 type MaskPoint = { x: number; y: number };
 type MaskStroke = { points: MaskPoint[]; size: number };
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 
 function drawMask(context: CanvasRenderingContext2D, strokes: MaskStroke[], width: number, height: number, preview: boolean) {
   context.lineCap = "round";

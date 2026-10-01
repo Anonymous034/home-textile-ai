@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import "./AccountPages.css";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 
 type Work = { id: string; tool_name: string; created_at: string; image_url: string };
 type CreditEvent = { id: string; delta: number; reason: string; created_at: string };

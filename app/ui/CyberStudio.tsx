@@ -25,7 +25,7 @@ type Preset = {
   description?: string | null;
 };
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://localhost:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 const presetImageUrl = (preset: Preset, quality: "thumb" | "hd") => {
   const version = preset.updated_at ? `&v=${encodeURIComponent(preset.updated_at)}` : "";
   return `${API}${preset.preview_url}?quality=${quality}${version}`;

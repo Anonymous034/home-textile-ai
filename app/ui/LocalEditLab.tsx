@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Drag
 import "./TemplateLab.css";
 import "./LocalEditLab.css";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 type SourceImage = { url: string; name: string; file: File };
 type MaskPoint = { x: number; y: number };
 type MaskStroke = { points: MaskPoint[]; size: number };

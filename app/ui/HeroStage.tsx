@@ -10,7 +10,7 @@ import "./DemoLoginForm.css";
 
 const VIDEO_SRC = "/hero-heading.mp4";
 const POSTER_SRC = "/hero-heading-poster.jpg";
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 
 export default function HeroStage() {
   const [reduceMotion, setReduceMotion] = useState(false);

@@ -4,8 +4,7 @@ import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import "./ProfessionalStudio.css";
 
-const API = "http://localhost:8000";
-const WS = "ws://localhost:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 const aspectValues = ["1:1", "3:4", "4:3", "9:16", "16:9"] as const;
 const resolutionEdges = { "1K": 1024, "2K": 2048, "4K": 4096 } as const;
 
@@ -74,7 +73,7 @@ export default function ProfessionalStudio() {
       })
       .catch(() => {
         setBackendOnline(false);
-        setError("后端服务尚未启动，请先启动本机 FastAPI 服务。界面可以查看，但无法上传和创建任务。");
+        setError("后端服务暂不可连接。界面可以查看，但无法上传和创建任务。");
       });
   }, []);
 
@@ -136,7 +135,9 @@ export default function ProfessionalStudio() {
 
   useEffect(() => {
     if (!job || !running) return;
-    const socket = new WebSocket(`${WS}/ws/jobs/${job.id}`);
+    const socketUrl = new URL(`${API}/ws/jobs/${job.id}`, window.location.href);
+    socketUrl.protocol = socketUrl.protocol === "https:" ? "wss:" : "ws:";
+    const socket = new WebSocket(socketUrl);
     let polling = 0;
     const update = (value: Job) => setJob(value);
     socket.onmessage = (event) => update(JSON.parse(event.data) as Job);

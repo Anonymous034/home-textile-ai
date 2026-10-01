@@ -5,7 +5,7 @@ import { validateSketchUpload } from "./sketch-upload";
 import "./TemplateLab.css";
 import "./SketchLab.css";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 type ImageAsset = { url: string; name: string; file: File };
 type GeneratedImage = { url: string; id: string };
 type Slot = "a" | "b" | "reference";

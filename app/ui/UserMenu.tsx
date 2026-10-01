@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChatGPTUser } from "../chatgpt-auth";
 
-const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 
 type UserMenuProps = {
   user: ChatGPTUser | null;

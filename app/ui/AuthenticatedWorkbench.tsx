@@ -5,7 +5,7 @@ import DemoLoginForm from "./DemoLoginForm";
 import WorkbenchDashboard from "./WorkbenchDashboard";
 import "./AuthenticatedWorkbench.css";
 
-const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
 export default function AuthenticatedWorkbench() {

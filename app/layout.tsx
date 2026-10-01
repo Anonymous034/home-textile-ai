@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head><script dangerouslySetInnerHTML={{ __html: `(() => {
-        const apiOrigin = new URL(${JSON.stringify(process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000")}).origin;
+        const apiOrigin = new URL(${JSON.stringify(process.env.NEXT_PUBLIC_STUDIO_API ?? "")}, window.location.href).origin;
         const originalFetch = window.fetch.bind(window);
         window.fetch = (input, init) => {
           try {

@@ -15,7 +15,7 @@ type StaticCatalog = { categories: LibraryCategory[]; templates: TemplateDetail[
 type AiConnection = { connected: boolean; message?: string; error_code?: string | null; checked_at?: string | null };
 type AiConnections = { replicate_image: AiConnection; template_plan: AiConnection };
 
-const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "http://localhost:8000").replace(/\/$/, "");
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 const fallbackTemplate = { id: "soft-bedroom", name: "柔光卧室", image: "/bento-gallery/template.png", tone: "奶油暖调" };
 const assetUrl = (path: string) => path.startsWith("http") || path.startsWith("/template-library/") ? path : `${API}${path}`;
 

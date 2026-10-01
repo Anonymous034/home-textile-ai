@@ -47,6 +47,7 @@ test("result links are confined to service download namespace", () => {
   assert.equal(api.resultUrl("//untrusted.example/image.png"), undefined);
   assert.equal(api.resultUrl("/api/detail/../../admin"), undefined);
   assert.match(api.resultUrl("/api/detail/tasks/id/export"), /\/api\/detail\/tasks\/id\/export$/);
+  assert.equal(api.resultUrl("/api/detail/tasks/id/export"), "/api/detail/tasks/id/export");
 });
 
 test("ambiguous render submission raises uncertain error and never auto-reposts", async (t) => {

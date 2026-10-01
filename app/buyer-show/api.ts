@@ -6,7 +6,7 @@ export interface BuyerPlan { project_title: string; aspect_ratio: string; resolu
 export interface BuyerTaskItem { index: number; shotType: string; status: "queued" | "rendering" | "completed" | "failed"; attempt: number; previewUrl?: string; downloadUrl?: string; error?: { message: string } }
 export interface BuyerTask { id: string; planId: string; status: "queued" | "running" | "completed" | "partial" | "failed"; items: BuyerTaskItem[]; exportUrl?: string }
 
-const BASE = (process.env.NEXT_PUBLIC_DETAIL_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const BASE = (process.env.NEXT_PUBLIC_DETAIL_API_URL ?? process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 export class BuyerApiError extends Error { constructor(message: string, public uncertain = false, public requestId = "") { super(message); } }
 
 async function checked(response: Response) {

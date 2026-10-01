@@ -15,6 +15,10 @@ Copy-Item backend/.env.example backend/.env
 
 按需在本机 `backend/.env` 填写站点提供的 API Key、图片模型配置及视觉策划接口配置。这个文件已被 Git 忽略，不要提交密钥。示例配置的 `DEMO_LOGIN_ENABLED=1` 仅供本机演示：进入功能页后，点击功能卡片，使用手机号 `123` 和验证码 `123456` 登录，无需获取短信验证码；生产环境必须设为 `0`。普通手机号的 `DEMO_SMS_MODE=mock` 只用于联调，使用 `DEMO_SMS_CODE` 完成验证码流程；要向真实手机发短信，需要接入短信供应商并提供签名、模板和服务密钥。随后双击 `启动本地网站.cmd`，或执行 `./start-ai-studio.ps1`；前端为 `http://127.0.0.1:3000`，后端接口文档为 `http://127.0.0.1:8000/docs`。登录后可在 `/settings` 验证个人 API Key；它只用于当前浏览器会话，不会覆盖站点配置。
 
+## 服务器部署准备
+
+前端默认使用同源 `/api`，不再把浏览器请求发往访问者电脑的 `127.0.0.1:8000`。部署时由反向代理把 `/api/`（以及 WebSocket `/ws/`）转发给运行在服务器上的 FastAPI；本地开发可在未提交的 `.env.local` 中设置 `NEXT_PUBLIC_STUDIO_API=http://localhost:8000`。详情页和买家秀默认使用同一地址，只有独立部署该服务时才需要设置 `NEXT_PUBLIC_DETAIL_API_URL`。完整的代理配置、安全设置及尚未接入的生产短信服务见 [服务器部署说明](docs/server-deployment.md)。
+
 ## 目录
 
 - `app/`：页面和前端组件

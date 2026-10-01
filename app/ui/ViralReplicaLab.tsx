@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import "./ViralReplicaLab.css";
 
-const API = process.env.NEXT_PUBLIC_STUDIO_API ?? "http://127.0.0.1:8000";
+const API = (process.env.NEXT_PUBLIC_STUDIO_API ?? "").replace(/\/+$/, "");
 const ACCEPT = "image/jpeg,image/png,image/webp";
 type Slot = "main" | "extraOne" | "extraTwo" | "reference";
 type Upload = { file: File; url: string; width: number; height: number };
