@@ -5,3 +5,4 @@ pillow==11.3.0
 python-dotenv==1.1.1
 httpx==0.28.1
 alipay-sdk-python==3.7.1360
+alibabacloud_dysmsapi20170525==4.6.0

@@ -11,15 +11,15 @@ test("homepage shows the workbench before a visitor selects a feature", async ()
   assert.match(workbench, /\{gateOpen && \(/);
 });
 
-test("login form always offers the 123 demo path and visible hint", async () => {
+test("login form requests and verifies six-digit SMS codes", async () => {
   const form = await readFile(new URL("../app/ui/DemoLoginForm.tsx", import.meta.url), "utf8");
-  assert.match(form, /phone\.trim\(\) === "123"/);
-  assert.match(form, /const DEMO_LOGIN_HINT = "演示登录：手机号填 123，验证码填 123456/);
-  assert.match(form, /demo-login__message.*DEMO_LOGIN_HINT/);
-  assert.doesNotMatch(form, /NEXT_PUBLIC_DEMO_LOGIN_ENABLED/);
+  assert.match(form, /fetch\("\/api\/auth\/request-code"/);
+  assert.match(form, /fetch\("\/api\/auth\/verify-code"/);
+  assert.match(form, /pattern="\[0-9\]\{6\}"/);
+  assert.doesNotMatch(form, /DEMO_LOGIN_HINT|\/api\/auth\/demo-login/);
 });
 
-test("authentication calls use the frontend origin and local proxy protects public demo login", async () => {
+test("authentication calls use the frontend origin and a server-side proxy", async () => {
   const sources = [
     "DemoLoginForm.tsx",
     "AuthenticatedWorkbench.tsx",
@@ -33,6 +33,5 @@ test("authentication calls use the frontend origin and local proxy protects publ
   }
   const proxy = await readFile(new URL("../app/api/auth/[...path]/route.ts", import.meta.url), "utf8");
   assert.match(proxy, /STUDIO_API_INTERNAL_URL/);
-  assert.match(proxy, /DEMO_LOGIN_PUBLIC_ENABLED/);
-  assert.match(proxy, /incoming\.pathname === "\/api\/auth\/demo-login"/);
+  assert.doesNotMatch(proxy, /DEMO_LOGIN_PUBLIC_ENABLED|demo-login/);
 });

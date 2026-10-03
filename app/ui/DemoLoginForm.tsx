@@ -4,9 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import "./DemoLoginForm.css";
 
-const API = "";
 const HOME_PATH = "/";
-const DEMO_LOGIN_HINT = "演示登录：手机号填 123，验证码填 123456；无需获取验证码或填写人机验证。";
 
 const challenges = [
   { id: "subtract-17-1", label: "17 - 1 = ?" },
@@ -98,18 +96,18 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
   };
 
   const requestCode = async () => {
-    if (!phone.trim()) {
-      setMessage("请先输入手机号码");
+    if (!/^1\d{10}$/.test(phone.trim())) {
+      setMessage("请输入有效的中国内地手机号");
       return;
     }
-    if (phone.trim() === "123") {
-      setMessage(DEMO_LOGIN_HINT);
+    if (humanAnswer.trim() !== ({ "subtract-17-1": "16", "add-8-4": "12", "subtract-9-3": "6" }[challenge.id])) {
+      setMessage("请先完成人机验证");
       return;
     }
     setRequestingCode(true);
     setMessage("正在发送验证码…");
     try {
-      const response = await fetch(`${API}/api/auth/request-code`, {
+      const response = await fetch("/api/auth/request-code", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -126,7 +124,7 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
       }
       setCodeRequested(true);
       setCountdown(60);
-      setMessage(`${result.message || "验证码已发送"}${result.expires_in ? `，${Math.floor(result.expires_in / 60)} 分钟内有效` : ""}`);
+      setMessage(result.message || "验证码发送请求已提交，5 分钟内有效");
     } catch {
       setMessage("暂时无法连接验证服务，请稍后再试");
     } finally {
@@ -136,12 +134,15 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!/^[0-9]{6}$/.test(verificationCode)) {
+      setMessage("请输入短信中的 6 位数字验证码");
+      return;
+    }
     setSubmitting(true);
     setMessage("正在验证填写的信息…");
 
     try {
-      const demo = phone.trim() === "123";
-      const response = await fetch(`${API}/api/auth/${demo ? "demo-login" : "verify-code"}`, {
+      const response = await fetch("/api/auth/verify-code", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -186,10 +187,12 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
           <span>手机号码</span>
           <input
             value={phone}
-            onChange={(event) => { setPhone(event.target.value); setMessage(""); }}
+            onChange={(event) => { setPhone(event.target.value); setCodeRequested(false); setVerificationCode(""); setMessage(""); }}
             inputMode="numeric"
             autoComplete="tel"
-            placeholder="例如 +86 138 0000 0000"
+            placeholder="请输入 11 位中国内地手机号"
+            maxLength={11}
+            required
           />
         </label>
 
@@ -203,6 +206,7 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
               inputMode="numeric"
               placeholder="请输入答案"
               aria-label="人机验证答案"
+              required
             />
             <button type="button" className="demo-login__refresh" onClick={refreshChallenge} aria-label="换一道题">
               ↻
@@ -215,11 +219,14 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
           <div className="demo-login__code-row">
             <input
               value={verificationCode}
-              onChange={(event) => { setVerificationCode(event.target.value); setMessage(""); }}
+              onChange={(event) => { setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6)); setMessage(""); }}
               inputMode="numeric"
               autoComplete="one-time-code"
               placeholder="6位验证码"
               aria-label="验证码"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              required
             />
             <button type="button" onClick={requestCode} disabled={requestingCode || countdown > 0}>
               {requestingCode ? "发送中…" : countdown > 0 ? `${countdown}s 后重发` : codeRequested ? "重新获取" : "获取验证码"}
@@ -236,7 +243,7 @@ export default function DemoLoginForm({ onSuccess, showBackLink = true }: DemoLo
           />
         </label>
 
-        <p className="demo-login__message" aria-live="polite">{message || (phone.trim() === "" || phone.trim() === "123" ? DEMO_LOGIN_HINT : "验证码有效期 5 分钟。")}</p>
+        <p className="demo-login__message" aria-live="polite">{message || "验证码有效期 5 分钟，请填写短信中的 6 位数字。"}</p>
         <button className="demo-login__submit" type="submit" disabled={submitting}>
           {submitting ? "正在验证…" : mode === "register" ? "验证并注册" : "验证码登录"}
         </button>

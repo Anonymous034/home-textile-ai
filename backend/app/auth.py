@@ -1,15 +1,9 @@
-"""Phone OTP authentication with a small, provider-agnostic SMS boundary.
-
-The default ``DEMO_SMS_MODE=mock`` mode is intentionally safe for local
-testing: it stores only a hash of the code and never returns or logs the
-verification value.  Production deployments should provide an SMS adapter
-behind ``send_sms_code`` (for example Aliyun SMS, Tencent Cloud SMS, or an
-internal gateway) and set ``DEMO_SMS_MODE=provider``.
-"""
+"""Phone OTP authentication backed by Alibaba Cloud SMS."""
 from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import os
 import re
 import secrets
@@ -30,6 +24,7 @@ OTP_TTL_SECONDS = 300
 OTP_MAX_ATTEMPTS = 5
 OTP_PHONE_COOLDOWN_SECONDS = 60
 OTP_HOURLY_LIMIT = 5
+OTP_IP_HOURLY_LIMIT = 20
 E164_RE = re.compile(r"^\+[1-9]\d{7,14}$")
 CN_MOBILE_RE = re.compile(r"^1\d{10}$")
 
@@ -50,10 +45,14 @@ def _hash(value: str) -> str:
 
 def _otp_hash(phone: str, code: str) -> str:
     # Include the normalized phone so a code copied to another number cannot
-    # be reused.  The server secret makes database-only offline guessing less
-    # useful if the default mock code is changed in a deployment.
+    # be reused. The server secret limits database-only offline guessing.
     secret = os.getenv("AUTH_OTP_PEPPER", "local-development-otp-pepper")
     return _hash(f"{secret}:{phone}:{code}")
+
+
+def _new_otp_code() -> str:
+    """Generate a uniformly random six-digit code, including leading zeros."""
+    return f"{secrets.randbelow(1_000_000):06d}"
 
 
 def _utc_after(seconds: int) -> str:
@@ -163,44 +162,7 @@ class RequestCodeBody(PhoneBody):
 
 
 class VerifyCodeBody(PhoneBody):
-    code: str = Field(min_length=4, max_length=8)
-
-
-@router.post("/demo-login")
-def demo_login(body: VerifyCodeBody, request: Request, response: Response) -> dict[str, Any]:
-    """Allow the demo account only when the deployment explicitly enables it."""
-    if (os.getenv("DEMO_LOGIN_ENABLED", "0").strip() != "1"
-            or (os.getenv("DEMO_LOGIN_PUBLIC_ENABLED", "0").strip() != "1"
-                and (_client_ip(request) not in {"127.0.0.1", "::1"}
-                     or request.url.hostname not in {"localhost", "127.0.0.1", "::1"}))):
-        raise HTTPException(404, "演示登录未启用")
-    if body.phone.strip() != "123":
-        raise HTTPException(400, "演示手机号不正确，请填写 123")
-    if not hmac.compare_digest(body.code.strip(), "123456"):
-        raise HTTPException(400, "演示验证码不正确，请填写 123456")
-
-    now_iso = utc_now()
-    account_id = "demo-user-123"
-    with connect() as db:
-        user = db.execute("SELECT id,status FROM users WHERE account_id=?", (account_id,)).fetchone()
-        if user:
-            if user["status"] != "active":
-                raise HTTPException(403, "该账号已被停用")
-            user_id = str(user["id"])
-            db.execute("UPDATE users SET last_seen_at=? WHERE account_id=?", (now_iso, account_id))
-        else:
-            user_id = f"usr_{uuid4().hex}"
-            db.execute(
-                "INSERT INTO users(id,account_id,role,status,created_at,last_seen_at,display_name) VALUES(?,?,?,?,?,?,?)",
-                (user_id, account_id, "user", "active", now_iso, now_iso, "演示用户"),
-            )
-        raw_token = secrets.token_urlsafe(48)
-        db.execute(
-            "INSERT INTO auth_sessions(id,account_id,token_hash,created_at,expires_at,last_seen_at,user_agent,ip_address) VALUES(?,?,?,?,?,?,?,?)",
-            (f"ses_{uuid4().hex}", account_id, _hash(raw_token), now_iso, _utc_after(SESSION_TTL_DAYS * 24 * 60 * 60), now_iso, request.headers.get("user-agent"), _client_ip(request)),
-        )
-    _set_session_cookie(response, raw_token)
-    return {"ok": True, "user": {"id": user_id, "account_id": account_id, "display_name": "演示用户", "role": "user"}}
+    code: str = Field(pattern=r"^[0-9]{6}$")
 
 
 def _validate_optional_challenge(body: RequestCodeBody) -> None:
@@ -224,20 +186,59 @@ class MockSmsProvider:
         return "mock"
 
 
+def _aliyun_sms_configuration() -> tuple[str, str, str, str]:
+    access_key_id = os.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID", "").strip()
+    access_key_secret = os.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET", "").strip()
+    sign_name = os.getenv("ALIYUN_SMS_SIGN_NAME", "").strip()
+    template_code = os.getenv("ALIYUN_SMS_TEMPLATE_CODE", "").strip()
+    if not all((access_key_id, access_key_secret, sign_name, template_code)) or not re.fullmatch(r"SMS_\d+", template_code):
+        raise HTTPException(503, "阿里云短信尚未配置，请填写服务端 AccessKey、短信签名和模板编号")
+    if not os.getenv("AUTH_OTP_PEPPER", "").strip():
+        raise HTTPException(503, "验证码服务端密钥尚未配置")
+    return access_key_id, access_key_secret, sign_name, template_code
+
+
 class ConfiguredSmsProvider:
     async def send(self, phone: str, code: str) -> str:
-        _ = (phone, code)
-        raise HTTPException(503, "短信服务尚未配置，请设置短信供应商适配器")
+        access_key_id, access_key_secret, sign_name, template_code = _aliyun_sms_configuration()
+        try:
+            from alibabacloud_dysmsapi20170525.client import Client
+            from alibabacloud_dysmsapi20170525 import models as sms_models
+            from alibabacloud_tea_openapi import models as open_api_models
+            from alibabacloud_tea_util import models as util_models
+        except ImportError as exc:
+            raise HTTPException(503, "阿里云短信 SDK 尚未安装") from exc
+
+        config = open_api_models.Config(access_key_id=access_key_id, access_key_secret=access_key_secret)
+        config.endpoint = "dysmsapi.aliyuncs.com"
+        client = Client(config)
+        sms_request = sms_models.SendSmsRequest(
+            phone_numbers=phone.removeprefix("+86"),
+            sign_name=sign_name,
+            template_code=template_code,
+            template_param=json.dumps({"code": code}, separators=(",", ":")),
+        )
+        runtime = util_models.RuntimeOptions(autoretry=False, max_attempts=1, connect_timeout=3000, read_timeout=5000)
+        try:
+            result = await client.send_sms_with_options_async(sms_request, runtime)
+        except Exception as exc:
+            # Never expose SDK errors: they may include request parameters.
+            raise HTTPException(502, "短信服务暂时无法连接，请稍后再试") from exc
+        provider_code = getattr(getattr(result, "body", None), "code", None)
+        if provider_code != "OK":
+            # Alibaba Cloud error codes are safe to show after constraining the
+            # format; never return the provider message or request parameters.
+            safe_code = provider_code if isinstance(provider_code, str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", provider_code) else "UNKNOWN"
+            raise HTTPException(502, f"短信发送失败（阿里云错误码：{safe_code}）")
+        return "aliyun"
 
 
 async def send_sms_code(phone: str, code: str) -> str:
     """Send a code through the configured adapter.
 
-    This repository deliberately does not bundle a vendor SDK or make an
-    implicit paid network call.  ``mock`` is the safe default for staging;
-    production wiring should replace this function with the selected provider.
+    Mock mode is explicit and only intended for local automated tests.
     """
-    provider = MockSmsProvider() if os.getenv("DEMO_SMS_MODE", "mock").strip().lower() == "mock" else ConfiguredSmsProvider()
+    provider = MockSmsProvider() if os.getenv("DEMO_SMS_MODE", "aliyun").strip().lower() == "mock" else ConfiguredSmsProvider()
     return await provider.send(phone, code)
 
 
@@ -245,11 +246,20 @@ async def send_sms_code(phone: str, code: str) -> str:
 async def request_code(body: RequestCodeBody, request: Request) -> dict[str, Any]:
     _validate_optional_challenge(body)
     phone = normalize_phone(body.phone)
+    if not phone.startswith("+86") or not CN_MOBILE_RE.fullmatch(phone[3:]):
+        raise HTTPException(422, "目前仅支持中国内地手机号")
+    # A missing configuration must fail before reserving a rate-limit slot.
+    if os.getenv("DEMO_SMS_MODE", "aliyun").strip().lower() != "mock":
+        _aliyun_sms_configuration()
     now = datetime.now(UTC)
     now_iso = now.isoformat()
     one_minute_ago = (now - timedelta(seconds=OTP_PHONE_COOLDOWN_SECONDS)).isoformat()
     one_hour_ago = (now - timedelta(hours=1)).isoformat()
+    code = _new_otp_code()
+    challenge_id = f"otp_{uuid4().hex}"
     with connect() as db:
+        # Reserve the rate-limit slot atomically before an external paid call.
+        db.execute("BEGIN IMMEDIATE")
         recent = db.execute(
             "SELECT created_at FROM otp_challenges WHERE phone=? AND created_at>? ORDER BY created_at DESC LIMIT 1",
             (phone, one_minute_ago),
@@ -262,22 +272,21 @@ async def request_code(body: RequestCodeBody, request: Request) -> dict[str, Any
         ).fetchone()[0]
         if int(hourly) >= OTP_HOURLY_LIMIT:
             raise HTTPException(429, "验证码发送次数已达上限，请稍后再试", headers={"Retry-After": "3600"})
-
-    configured_code = os.getenv("DEMO_SMS_CODE", "123456").strip()
-    if os.getenv("DEMO_SMS_MODE", "mock").strip().lower() == "mock" and re.fullmatch(r"\d{6}", configured_code):
-        code = configured_code
-    else:
-        code = f"{secrets.randbelow(1_000_000):06d}"
-    delivery = await send_sms_code(phone, code)
-    challenge_id = f"otp_{uuid4().hex}"
-    with connect() as db:
+        ip = _client_ip(request)
+        if ip:
+            ip_count = db.execute(
+                "SELECT COUNT(*) FROM otp_challenges WHERE request_ip=? AND created_at>?",
+                (ip, one_hour_ago),
+            ).fetchone()[0]
+            if int(ip_count) >= OTP_IP_HOURLY_LIMIT:
+                raise HTTPException(429, "请求过于频繁，请稍后再试", headers={"Retry-After": "3600"})
         db.execute(
             "INSERT INTO otp_challenges(id,phone,code_hash,created_at,expires_at,request_ip) VALUES(?,?,?,?,?,?)",
             (challenge_id, phone, _otp_hash(phone, code), now_iso, _utc_after(OTP_TTL_SECONDS), _client_ip(request)),
         )
-    # Never return or log ``code``.  In mock mode the operator supplies the
-    # same value through DEMO_SMS_CODE when testing a local/staging instance.
-    return {"ok": True, "delivery": delivery, "expires_in": OTP_TTL_SECONDS, "message": f"验证码已发送至 {_masked_phone(phone)}"}
+    delivery = await send_sms_code(phone, code)
+    # Never return or log ``code``; the provider receives it only for sending.
+    return {"ok": True, "delivery": delivery, "expires_in": OTP_TTL_SECONDS, "message": f"验证码发送请求已提交至 {_masked_phone(phone)}，5 分钟内有效"}
 
 
 @router.post("/verify-code")
@@ -287,6 +296,8 @@ def verify_code(body: VerifyCodeBody, request: Request, response: Response) -> d
     now = datetime.now(UTC)
     now_iso = now.isoformat()
     with connect() as db:
+        # Serialize read/consume so concurrent requests cannot redeem one code twice.
+        db.execute("BEGIN IMMEDIATE")
         challenge = db.execute(
             "SELECT * FROM otp_challenges WHERE phone=? AND consumed_at IS NULL ORDER BY created_at DESC LIMIT 1",
             (phone,),

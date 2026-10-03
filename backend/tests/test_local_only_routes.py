@@ -1,11 +1,9 @@
 import unittest
-import tempfile
-from pathlib import Path
 from unittest.mock import patch
 
-from fastapi import HTTPException, Request, Response
+from fastapi import HTTPException, Request
 
-from backend.app import auth, database, main
+from backend.app import main
 
 
 def request_for(host: str) -> Request:
@@ -22,41 +20,6 @@ def request_for(host: str) -> Request:
 
 
 class LocalOnlyRouteTests(unittest.TestCase):
-    def test_demo_login_still_works_on_local_host(self):
-        with tempfile.TemporaryDirectory() as folder:
-            with (patch.object(database, "DB_PATH", Path(folder) / "test.sqlite3"),
-                  patch.dict("os.environ", {"DEMO_LOGIN_ENABLED": "1"})):
-                auth.initialize_auth()
-                response = Response()
-                result = auth.demo_login(
-                    auth.VerifyCodeBody(phone="123", code="123456"),
-                    request_for("localhost:8000"),
-                    response,
-                )
-                self.assertTrue(result["ok"])
-                self.assertIn(auth.SESSION_COOKIE, response.headers["set-cookie"])
-
-    def test_demo_login_rejects_public_host_even_behind_loopback_proxy(self):
-        body = auth.VerifyCodeBody(phone="123", code="123456")
-        with patch.dict("os.environ", {"DEMO_LOGIN_ENABLED": "1", "DEMO_LOGIN_PUBLIC_ENABLED": "0"}):
-            with self.assertRaises(HTTPException) as error:
-                auth.demo_login(body, request_for("public.example"), Response())
-        self.assertEqual(error.exception.status_code, 404)
-
-    def test_demo_login_can_be_explicitly_enabled_for_an_isolated_public_demo(self):
-        with tempfile.TemporaryDirectory() as folder:
-            with (patch.object(database, "DB_PATH", Path(folder) / "test.sqlite3"),
-                  patch.dict("os.environ", {"DEMO_LOGIN_ENABLED": "1", "DEMO_LOGIN_PUBLIC_ENABLED": "1"})):
-                auth.initialize_auth()
-                response = Response()
-                result = auth.demo_login(
-                    auth.VerifyCodeBody(phone="123", code="123456"),
-                    request_for("public.example"),
-                    response,
-                )
-                self.assertTrue(result["ok"])
-                self.assertIn(auth.SESSION_COOKIE, response.headers["set-cookie"])
-
     def test_key_configuration_rejects_public_host_and_disabled_gate(self):
         body = main.LocalArkKeyCreate(api_key="x" * 24)
         for host, enabled in (("public.example", "1"), ("localhost", "0")):

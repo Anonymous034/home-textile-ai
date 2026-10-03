@@ -1,5 +1,11 @@
 # AI 商拍后端
 
+## 手机号短信登录
+
+安装 `backend/requirements.txt` 后，在服务器的 `backend/.env` 中配置阿里云 AccessKey ID、Secret、已审核且完成运营商报备的短信签名、包含 `${code}` 的验证码模板编号，以及随机生成的 `AUTH_OTP_PEPPER`。变量名见 `backend/.env.example`。生产环境还需设置 `AUTH_COOKIE_SECURE=1` 并通过 HTTPS 访问。不要把 `backend/.env`、真实密钥或验证码提交到 Git。`DEMO_SMS_MODE=mock` 仅供自动化测试，不会向手机发送短信。
+
+登录接口为 `POST /api/auth/request-code` 和 `POST /api/auth/verify-code`。验证码是随机六位数字，五分钟有效，最多尝试五次；校验成功后立即作废。短信供应商接受发送请求不保证运营商最终投递，须在阿里云发送详情核对回执。
+
 未配置密钥时默认使用 `mock` 供应商，仅用于验证上传、排队、进度和结果流程，不代表真实 AI 商拍质量。
 
 ## 启动

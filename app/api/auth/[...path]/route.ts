@@ -2,11 +2,6 @@ const backendBase = (process.env.STUDIO_API_INTERNAL_URL || process.env.NEXT_PUB
 
 async function proxyAuth(request: Request): Promise<Response> {
   const incoming = new URL(request.url);
-  const isLocal = ["localhost", "127.0.0.1", "::1"].includes(incoming.hostname);
-  if (incoming.pathname === "/api/auth/demo-login" && !isLocal && process.env.DEMO_LOGIN_PUBLIC_ENABLED !== "1") {
-    return Response.json({ ok: false, message: "演示登录未启用" }, { status: 404 });
-  }
-
   const headers = new Headers();
   const contentType = request.headers.get("content-type");
   const cookie = request.headers.get("cookie");

@@ -13,11 +13,11 @@ backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt
 Copy-Item backend/.env.example backend/.env
 ```
 
-按需在本机 `backend/.env` 填写站点提供的 API Key、图片模型配置及视觉策划接口配置。这个文件已被 Git 忽略，不要提交密钥。示例配置的 `DEMO_LOGIN_ENABLED=1` 仅供本机演示：进入功能页后，点击功能卡片，使用手机号 `123` 和验证码 `123456` 登录，无需获取短信验证码；生产环境必须设为 `0`。普通手机号的 `DEMO_SMS_MODE=mock` 只用于联调，使用 `DEMO_SMS_CODE` 完成验证码流程；要向真实手机发短信，需要接入短信供应商并提供签名、模板和服务密钥。随后双击 `启动本地网站.cmd`，或执行 `./start-ai-studio.ps1`；前端为 `http://127.0.0.1:3000`，后端接口文档为 `http://127.0.0.1:8000/docs`。登录后可在 `/settings` 验证个人 API Key；它只用于当前浏览器会话，不会覆盖站点配置。
+在本机 `backend/.env` 填写阿里云 AccessKey ID、Secret、已审核的短信签名、包含 `${code}` 的模板编号和随机生成的 `AUTH_OTP_PEPPER`；其他 AI 配置按需填写。这个文件已被 Git 忽略，不要提交密钥。登录页会向真实手机号发送随机六位数字验证码，并在服务端完成有效期、尝试次数与一次性校验。随后双击 `启动本地网站.cmd`，或执行 `./start-ai-studio.ps1`；前端为 `http://127.0.0.1:3000`，后端接口文档为 `http://127.0.0.1:8000/docs`。登录后可在 `/settings` 验证个人 API Key；它只用于当前浏览器会话，不会覆盖站点配置。
 
 ## 服务器部署准备
 
-前端默认使用同源 `/api`，不再把浏览器请求发往访问者电脑的 `127.0.0.1:8000`。登录相关请求在本地由前端同源转发给 FastAPI；如后端不在 `127.0.0.1:8000`，可在未提交的 `.env.local` 中设置服务端变量 `STUDIO_API_INTERNAL_URL`。首页直接显示功能页；未登录时点功能卡片才弹出登录框。登录框始终提示演示账号 `123 / 123456`，但后端默认仅允许本机使用；隔离演示服务器如需开放，须显式设置 `DEMO_LOGIN_PUBLIC_ENABLED=1`，不可用于真实用户数据。部署时由反向代理把 `/api/`（以及 WebSocket `/ws/`）转发给运行在服务器上的 FastAPI；本地开发仍可在未提交的 `.env.local` 中设置 `NEXT_PUBLIC_STUDIO_API=http://localhost:8000` 供其他功能调用。详情页和买家秀默认使用同一地址，只有独立部署该服务时才需要设置 `NEXT_PUBLIC_DETAIL_API_URL`。完整的代理配置、安全设置及尚未接入的生产短信服务见 [服务器部署说明](docs/server-deployment.md)。
+前端默认使用同源 `/api`，不会把浏览器请求发往访问者电脑的 `127.0.0.1:8000`。登录请求由同源接口转发给 FastAPI；如后端不在 `127.0.0.1:8000`，可在未提交的 `.env.local` 中设置服务端变量 `STUDIO_API_INTERNAL_URL`。首页直接显示功能页；未登录时点功能卡片才弹出登录框。部署时由反向代理把 `/api/`（以及 WebSocket `/ws/`）转发给服务器上的 FastAPI。本地开发仍可在未提交的 `.env.local` 中设置 `NEXT_PUBLIC_STUDIO_API=http://localhost:8000` 供其他功能调用。详情页和买家秀默认使用同一地址，只有独立部署该服务时才需要设置 `NEXT_PUBLIC_DETAIL_API_URL`。完整的代理配置和密钥设置见 [服务器部署说明](docs/server-deployment.md)。
 
 ## 目录
 
