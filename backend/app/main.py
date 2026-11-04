@@ -40,6 +40,7 @@ from .sketch import router as sketch_router
 from .account import router as account_router, initialize_account, record_work
 from .payments import router as payment_router
 from .auth import router as auth_router, initialize_auth
+from .admin import router as admin_router, initialize_admin
 
 ASPECTS = {"1:1": (1, 1), "3:4": (3, 4), "4:3": (4, 3), "9:16": (9, 16), "16:9": (16, 9)}
 LONG_EDGES = {"1K": 1024, "2K": 2048, "4K": 4096}
@@ -306,6 +307,7 @@ async def lifespan(_: FastAPI):
     initialize()
     initialize_auth()
     initialize_account()
+    initialize_admin()
     initialize_replica()
     await start_replica_connectivity()
     global studio_connectivity_monitor, plan_connectivity_monitor
@@ -345,6 +347,7 @@ app.include_router(sketch_router)
 app.include_router(account_router)
 app.include_router(payment_router)
 app.include_router(auth_router)
+app.include_router(admin_router)
 app.add_middleware(ReplicaGuard)
 app.add_middleware(
     CORSMiddleware,
