@@ -67,6 +67,21 @@ def _masked_phone(phone: str) -> str:
     return f"{phone[:3]}****{phone[-4:]}"
 
 
+def admin_phones() -> set[str]:
+    """ADMIN_PHONES 里的号码登录后自动获得管理员权限。"""
+    values: set[str] = set()
+    raw = os.getenv("ADMIN_PHONES", "").replace(";", ",").replace("\n", ",")
+    for part in raw.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        try:
+            values.add(normalize_phone(part))
+        except HTTPException:
+            continue
+    return values
+
+
 def _client_ip(request: Request) -> str | None:
     # Do not trust forwarded headers by default; deployments behind a trusted
     # proxy can add their own normalized value before the app receives it.
@@ -334,6 +349,10 @@ def verify_code(body: VerifyCodeBody, request: Request, response: Response) -> d
                 "INSERT INTO users(id,account_id,role,status,created_at,last_seen_at,phone,phone_verified_at,display_name) VALUES(?,?,?,?,?,?,?,?,?)",
                 (user_id, account_id, role, "active", now_iso, now_iso, phone, now_iso, display_name),
             )
+        if phone in admin_phones() and role != "admin":
+            # 管理员白名单来自服务端环境变量，登录时自动提权。
+            role = "admin"
+            db.execute("UPDATE users SET role='admin' WHERE id=?", (user_id,))
         raw_token = secrets.token_urlsafe(48)
         db.execute(
             "INSERT INTO auth_sessions(id,account_id,token_hash,created_at,expires_at,last_seen_at,user_agent,ip_address) VALUES(?,?,?,?,?,?,?,?)",
